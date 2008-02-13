@@ -37,6 +37,8 @@ public class PatientRelationshipRules {
     /**
      * Check the relationships for a patient, ensuring they are valid
      * and only one is active for each relationship type.
+     *
+     * @param patient the patient
      */
     public static void checkRelationships(Party patient) {
         Map<String, EntityRelationship> currentActives
@@ -46,42 +48,43 @@ public class PatientRelationshipRules {
         // Loop through all the patient relationships.
         // . If one is new then assume it is the active and set the
         //   activeEndTime on any others.
-        // . If more than 1 is new then set active to youngest
-        //   activeStartTime.
+        // . If more than 1 is new then set active to youngest activeStartTime.
         // . If no new relationship and more than one active relationship of
         //   same type then set the one with the youngest activeStartTime as
         //   active.
         for (EntityRelationship rel : patient.getEntityRelationships()) {
-            if (rel.getActiveEndTime() == null) {
-                String shortname = rel.getArchetypeId().getShortName();
-                currentActive = currentActives.get(shortname);
-                if (rel.isNew()) {
-                    if (currentActive == null) {
-                        currentActive = rel;
-                    } else if (currentActive.isNew()) {
-                        if (after(rel, currentActive)) {
+            if (rel.isActive()) {
+                if (rel.getActiveEndTime() == null) {
+                    String shortname = rel.getArchetypeId().getShortName();
+                    currentActive = currentActives.get(shortname);
+                    if (rel.isNew()) {
+                        if (currentActive == null) {
+                            currentActive = rel;
+                        } else if (currentActive.isNew()) {
+                            if (after(rel, currentActive)) {
+                                deactivate(currentActive);
+                                currentActive = rel;
+                            } else {
+                                deactivate(rel);
+                            }
+                        } else {
                             deactivate(currentActive);
                             currentActive = rel;
-                        } else {
-                            deactivate(rel);
                         }
                     } else {
-                        deactivate(currentActive);
-                        currentActive = rel;
+                        if (currentActive == null) {
+                            currentActive = rel;
+                        } else if (currentActive.isNew()) {
+                            deactivate(rel);
+                        } else if (after(rel, currentActive)) {
+                            deactivate(currentActive);
+                            currentActive = rel;
+                        } else if (after(currentActive, rel)) {
+                            deactivate(rel);
+                        }
                     }
-                } else {
-                    if (currentActive == null) {
-                        currentActive = rel;
-                    } else if (currentActive.isNew()) {
-                        deactivate(rel);
-                    } else if (after(rel, currentActive)) {
-                        deactivate(currentActive);
-                        currentActive = rel;
-                    } else if (after(currentActive, rel)) {
-                        deactivate(rel);
-                    }
+                    currentActives.put(shortname, currentActive);
                 }
-                currentActives.put(shortname, currentActive);
             }
         }
     }
