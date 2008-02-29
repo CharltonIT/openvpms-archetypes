@@ -241,11 +241,13 @@ public class StatementProcessorTestCase extends AbstractStatementTest {
         checkAct(acts.get(0), "act.customerAccountOpeningBalance",
                  BigDecimal.ZERO);
 
-        // backdate the statement to 14/2/2008. Should only include the
-        // opening balance
-        processStatement(statementDate6, customer);
-        assertEquals(1, acts.size());
+        // backdate the statement to 14/1/2008. Should only include the
+        // opening balance and payment
+        processStatement(statementDate4, customer);
+        acts = processStatement(statementDate4, customer);
+        assertEquals(2, acts.size());
         checkAct(acts.get(0), "act.customerAccountOpeningBalance", amount);
+        checkAct(acts.get(1), "act.customerAccountPayment", amount);
     }
 
     /**
