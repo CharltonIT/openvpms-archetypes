@@ -128,7 +128,7 @@ public class AppointmentRules {
      * @throws OpenVPMSException for any error
      */
     public boolean hasOverlappingAppointments(Act appointment) {
-        long uid = appointment.getUid();
+        long uid = appointment.getId();
         ActBean bean = new ActBean(appointment, service);
         IMObjectReference schedule
                 = bean.getParticipantRef("participation.schedule");
@@ -152,7 +152,7 @@ public class AppointmentRules {
      */
     public void updateTask(Act act) {
         ActBean bean = new ActBean(act, service);
-        List<Act> tasks = bean.getActsForNode("tasks");
+        List<Act> tasks = bean.getNodeActs("tasks");
         if (!tasks.isEmpty()) {
             Act task = tasks.get(0);
             updateStatus(act, task);
@@ -169,7 +169,7 @@ public class AppointmentRules {
      */
     public void updateAppointment(Act act) {
         ActBean bean = new ActBean(act, service);
-        List<Act> appointments = bean.getActsForNode("appointments");
+        List<Act> appointments = bean.getNodeActs("appointments");
         if (!appointments.isEmpty()) {
             Act appointment = appointments.get(0);
             updateStatus(act, appointment);
@@ -241,7 +241,7 @@ public class AppointmentRules {
         //   && ((act.startTime < startTime && act.endTime > startTime)
         //   || (act.startTime < endTime && act.endTime > endTime)
         //   || (act.startTime >= startTime && act.endTime <= endTime))
-        query.add(new NodeConstraint("uid", RelationalOp.NE, uid));
+        query.add(new NodeConstraint("id", RelationalOp.NE, uid));
         CollectionNodeConstraint participations = new CollectionNodeConstraint(
                 "schedule", "participation.schedule", false, true)
                 .add(new ObjectRefNodeConstraint("entity", schedule))

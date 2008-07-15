@@ -100,7 +100,6 @@ public class EndOfPeriodProcessorTestCase extends AbstractStatementTest {
         Money amount = new Money(100);
         FinancialAct invoice1 = createChargesInvoice(
                 amount, getDatetime("2007-01-01 10:00:00"));
-        save(invoice1);
 
         acts = getActs(customer, statementDate);
         assertEquals(1, acts.size());
@@ -124,7 +123,6 @@ public class EndOfPeriodProcessorTestCase extends AbstractStatementTest {
         // save a new invoice after the statement date
         FinancialAct invoice2 = createChargesInvoice(
                 amount, getDatetime("2007-01-02 10:00:00"));
-        save(invoice2);
 
         // verify it doesn't appear in the statement
         acts = getActs(customer, statementDate);
@@ -195,14 +193,12 @@ public class EndOfPeriodProcessorTestCase extends AbstractStatementTest {
 
         final Money amount = new Money(100);
         FinancialAct invoice1 = createChargesInvoice(
-                amount, getDatetime("2007-01-01 10:00:00"));
-        invoice1.setStatus(FinancialActStatus.COMPLETED);  // won't be posted
-        save(invoice1);
+                amount, getDatetime("2007-01-01 10:00:00"),
+                FinancialActStatus.COMPLETED);  // won't be posted
 
         FinancialAct invoice2 = createChargesInvoice(
                 amount, getDatetime("2007-01-01 11:00:00"));
         invoice2.setStatus(FinancialActStatus.IN_PROGRESS);  // won't be posted
-        save(invoice2);
 
         FinancialAct invoice3 = createChargesInvoice(
                 amount, getDatetime("2007-01-01 11:00:00"));
@@ -320,7 +316,6 @@ public class EndOfPeriodProcessorTestCase extends AbstractStatementTest {
         Money amount = new Money(100);
         FinancialAct invoice = createChargesInvoice(
                 amount, getDatetime("2007-01-01 10:00:00"));
-        save(invoice);
         FinancialAct payment = createPayment(
                 amount, getDatetime("2007-01-01 11:00:00"));
         save(payment);

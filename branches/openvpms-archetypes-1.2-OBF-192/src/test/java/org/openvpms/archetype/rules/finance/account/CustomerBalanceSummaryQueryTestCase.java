@@ -66,8 +66,7 @@ public class CustomerBalanceSummaryQueryTestCase
 
         // create and save a new invoice
         final Money hundred = new Money(100);
-        FinancialAct invoice = createChargesInvoice(hundred, startTime);
-        save(invoice);
+        createChargesInvoice(hundred, startTime);
 
         // pay half the invoice
         Date paymentStartTime = DateRules.getDate(startTime, 1, DateUnits.DAYS);
@@ -186,8 +185,7 @@ public class CustomerBalanceSummaryQueryTestCase
 
         // create and save a new invoice
         final Money amount = new Money(100);
-        FinancialAct invoice = createChargesInvoice(amount, startTime);
-        save(invoice);
+        createChargesInvoice(amount, startTime);
 
         // get all customers with overdue balances. Should include the customer
         List<IMObjectReference> after = getCustomersWithOverdueBalances(now, 0,
@@ -255,9 +253,9 @@ public class CustomerBalanceSummaryQueryTestCase
         FinancialAct invoice1 = createChargesInvoice(new Money(100), customerA);
         FinancialAct invoice2 = createChargesInvoice(new Money(100), customerB);
         FinancialAct invoice3 = createChargesInvoice(new Money(100), customerZ);
-        save(invoice1);
-        save(invoice2);
-        save(invoice3);
+        postAndSave(invoice1);
+        postAndSave(invoice2);
+        postAndSave(invoice3);
 
         // check queries
         CustomerBalanceSummaryQuery query1 = new CustomerBalanceSummaryQuery(
@@ -318,9 +316,7 @@ public class CustomerBalanceSummaryQueryTestCase
 
         // create and save a new invoice for customer1
         final Money hundred = new Money(100);
-        FinancialAct invoice = createChargesInvoice(hundred, customer1);
-        invoice.setActivityStartTime(startTime);
-        save(invoice);
+        createChargesInvoice(hundred, customer1, startTime);
 
         // create and save a new payment for customer2. Will leave a credit
         // balance.
@@ -371,14 +367,14 @@ public class CustomerBalanceSummaryQueryTestCase
         for (int i = 0; i < 10; ++i) {
             FinancialAct invoice1 = createChargesInvoice(hundred, customer1);
             invoice1.setActivityStartTime(startTime);
-            save(invoice1);
+            postAndSave(invoice1);
             cust1Balance = cust1Balance.add(hundred);
         }
         // create and save invoices for customer2
         for (int i = 0; i < 12; ++i) {
             FinancialAct invoice2 = createChargesInvoice(hundred, customer2);
             invoice2.setActivityStartTime(startTime);
-            save(invoice2);
+            postAndSave(invoice2);
             cust2Balance = cust2Balance.add(hundred);
         }
 

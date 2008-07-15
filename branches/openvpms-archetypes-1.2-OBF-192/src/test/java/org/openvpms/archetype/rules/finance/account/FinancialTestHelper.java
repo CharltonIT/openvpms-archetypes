@@ -44,7 +44,8 @@ import java.util.Random;
 public class FinancialTestHelper extends TestHelper {
 
     /**
-     * Helper to create a POSTED <em>act.customerAccountChargesInvoice</em>.
+     * Helper to create and save an <em>IN_PROGRESS</em>
+     * <em>act.customerAccountChargesInvoice</em>.
      *
      * @param amount   the act total
      * @param customer the customer
@@ -57,8 +58,9 @@ public class FinancialTestHelper extends TestHelper {
                                                     Party patient,
                                                     Product product) {
         List<FinancialAct> charges = createChargesInvoice(
-                amount, customer, patient, product, FinancialActStatus.POSTED);
-        save(charges.get(1));
+                amount, customer, patient, product,
+                FinancialActStatus.IN_PROGRESS);
+        save(charges);
         return charges.get(0);
     }
 
@@ -85,7 +87,8 @@ public class FinancialTestHelper extends TestHelper {
     }
 
     /**
-     * Helper to create a POSTED <em>act.customerAccountChargesCounter</em>.
+     * Helper to create and save an <em>IN_PROGRESS</em>
+     * <em>act.customerAccountChargesCounter</em>.
      *
      * @param amount   the act total
      * @param customer the customer
@@ -96,8 +99,8 @@ public class FinancialTestHelper extends TestHelper {
                                                     Party customer,
                                                     Product product) {
         List<FinancialAct> charges = createChargesCounter(
-                amount, customer, product, FinancialActStatus.POSTED);
-        save(charges.get(1));
+                amount, customer, product, FinancialActStatus.IN_PROGRESS);
+        save(charges);
         return charges.get(0);
     }
 
@@ -122,7 +125,8 @@ public class FinancialTestHelper extends TestHelper {
     }
 
     /**
-     * Helper to create a POSTED <em>act.customerAccountChargesCredit</em>.
+     * Helper to create and save an <em>IN_PROGRESS</em>
+     * <em>act.customerAccountChargesCredit</em>.
      *
      * @param amount   the act total
      * @param customer the customer
@@ -134,8 +138,9 @@ public class FinancialTestHelper extends TestHelper {
                                                    Party patient,
                                                    Product product) {
         List<FinancialAct> charges = createChargesCredit(
-                amount, customer, patient, product, FinancialActStatus.POSTED);
-        save(charges.get(1));
+                amount, customer, patient, product,
+                FinancialActStatus.IN_PROGRESS);
+        save(charges);
         return charges.get(0);
     }
 

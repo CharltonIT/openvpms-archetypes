@@ -31,7 +31,6 @@ import org.openvpms.component.business.domain.im.product.Product;
 import org.openvpms.component.business.service.archetype.ArchetypeServiceException;
 import org.openvpms.component.business.service.archetype.IArchetypeService;
 import org.openvpms.component.business.service.archetype.helper.ActBean;
-import org.openvpms.component.business.service.archetype.helper.ArchetypeQueryHelper;
 import org.openvpms.component.business.service.archetype.helper.EntityBean;
 import org.openvpms.component.business.service.archetype.helper.TypeHelper;
 
@@ -146,7 +145,7 @@ class InvoiceItemSaveRules {
         // Need to modify back when this fixed in 1.2.
         for (IMObject object : toSave) {
             if (TypeHelper.isA(object, "act.patientReminder")) {
-                reminderRules.markMatchingRemindersCompleted((Act)object); 
+                reminderRules.markMatchingRemindersCompleted((Act) object);
             }
             service.save(object);
         }
@@ -357,7 +356,7 @@ class InvoiceItemSaveRules {
      */
     private IMObject getObject(IMObjectReference ref) {
         if (ref != null) {
-            return ArchetypeQueryHelper.getByObjectReference(service, ref);
+            return service.get(ref);
         }
         return null;
     }

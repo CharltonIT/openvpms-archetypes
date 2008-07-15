@@ -111,7 +111,8 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
     }
 
     /**
-     * Helper to create an <em>act.customerAccountChargesInvoice</em>.
+     * Helper to create and save a <em>POSTED</em>
+     * <em>act.customerAccountChargesInvoice</em>.
      *
      * @param amount the act total
      * @return a new act
@@ -121,20 +122,41 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
     }
 
     /**
-     * Helper to create an <em>act.customerAccountChargesInvoice</em>.
+     * Helper to create and save a <em>POSTED</em>
+     * <em>act.customerAccountChargesInvoice</em>.
      *
      * @param amount   the act total
      * @param customer the customer
      * @return a new act
      */
     protected FinancialAct createChargesInvoice(Money amount, Party customer) {
-        return FinancialTestHelper.createChargesInvoice(amount, customer,
-                                                        getPatient(),
-                                                        getProduct());
+        FinancialAct invoice = FinancialTestHelper.createChargesInvoice(
+                amount, customer, getPatient(), getProduct());
+        postAndSave(invoice);
+        return invoice;
     }
 
     /**
-     * Helper to create an <em>act.customerAccountChargesInvoice</em>.
+     * Helper to create and save a <em>POSTED</em>
+     * <em>act.customerAccountChargesInvoice</em>.
+     *
+     * @param amount    the act total
+     * @param customer  the customer
+     * @param startTime the act start time
+     * @return a new act
+     */
+    protected FinancialAct createChargesInvoice(Money amount, Party customer,
+                                                Date startTime) {
+        FinancialAct invoice = FinancialTestHelper.createChargesInvoice(
+                amount, customer, getPatient(), getProduct());
+        invoice.setActivityStartTime(startTime);
+        postAndSave(invoice);
+        return invoice;
+    }
+
+    /**
+     * Helper to create and save a <em>POSTED</em>
+     * <em>act.customerAccountChargesInvoice</em>.
      *
      * @param amount    the act total
      * @param startTime the act start time
@@ -144,7 +166,40 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
                                                 Date startTime) {
         FinancialAct invoice = createChargesInvoice(amount);
         invoice.setActivityStartTime(startTime);
+        postAndSave(invoice);
         return invoice;
+    }
+
+    /**
+     * Helper to create and save an <em>act.customerAccountChargesInvoice</em>.
+     *
+     * @param amount    the act total
+     * @param customer  the customer
+     * @param startTime the act start time
+     * @param status    the act status
+     * @return a new act
+     */
+    protected FinancialAct createChargesInvoice(Money amount, Party customer,
+                                                Date startTime, String status) {
+        FinancialAct invoice = FinancialTestHelper.createChargesInvoice(
+                amount, customer, getPatient(), getProduct());
+        invoice.setActivityStartTime(startTime);
+        invoice.setStatus(status);
+        save(invoice);
+        return invoice;
+    }
+
+    /**
+     * Helper to create and save an <em>act.customerAccountChargesInvoice</em>.
+     *
+     * @param amount    the act total
+     * @param startTime the act start time
+     * @param status    the act status
+     * @return a new act
+     */
+    protected FinancialAct createChargesInvoice(Money amount, Date startTime,
+                                                String status) {
+        return createChargesInvoice(amount, getCustomer(), startTime, status);
     }
 
     /**

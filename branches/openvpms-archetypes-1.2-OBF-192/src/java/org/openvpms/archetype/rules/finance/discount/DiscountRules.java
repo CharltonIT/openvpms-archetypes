@@ -27,7 +27,6 @@ import org.openvpms.component.business.domain.im.product.Product;
 import org.openvpms.component.business.service.archetype.ArchetypeServiceException;
 import org.openvpms.component.business.service.archetype.ArchetypeServiceHelper;
 import org.openvpms.component.business.service.archetype.IArchetypeService;
-import org.openvpms.component.business.service.archetype.helper.ArchetypeQueryHelper;
 import org.openvpms.component.business.service.archetype.helper.EntityBean;
 import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
 import org.openvpms.component.system.common.query.ArchetypeQuery;
@@ -231,8 +230,7 @@ public class DiscountRules {
             result = new ArrayList<Entity>();
             for (IMObjectReference ref : refs) {
                 Entity discount
-                        = (Entity) ArchetypeQueryHelper.getByObjectReference(
-                        service, ref);
+                        = (Entity) service.get(ref);
                 if (discount != null && discount.isActive()) {
                     result.add(discount);
                 }

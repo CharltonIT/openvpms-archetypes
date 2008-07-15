@@ -18,12 +18,13 @@
 
 package org.openvpms.archetype.test;
 
+import org.openvpms.archetype.rules.act.ActStatus;
+import org.openvpms.component.business.domain.im.act.Act;
 import org.openvpms.component.business.domain.im.common.IMObject;
 import org.openvpms.component.business.domain.im.common.IMObjectReference;
 import org.openvpms.component.business.service.archetype.ArchetypeServiceException;
 import org.openvpms.component.business.service.archetype.IArchetypeService;
 import org.openvpms.component.business.service.archetype.ValidationException;
-import org.openvpms.component.business.service.archetype.helper.ArchetypeQueryHelper;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 import java.math.BigDecimal;
@@ -96,10 +97,18 @@ public abstract class ArchetypeServiceTest
      * @throws ArchetypeServiceException if the service cannot save the objects
      * @throws ValidationException       if the object cannot be validated
      */
-    @SuppressWarnings("unchecked")
     protected <T extends IMObject> void save(Collection<T> objects) {
-        Collection<IMObject> cast = (Collection<IMObject>) objects;
-        service.save(cast);
+        service.save(objects);
+    }
+
+    /**
+     * Helper to post and save an act.
+     *
+     * @param act the act to save
+     */
+    protected void postAndSave(Act act) {
+        act.setStatus(ActStatus.POSTED);
+        save(act);
     }
 
     /**
@@ -120,7 +129,7 @@ public abstract class ArchetypeServiceTest
      * @return the corresponding object or <tt>null</tt> if no object is found
      */
     protected IMObject get(IMObjectReference ref) {
-        return ArchetypeQueryHelper.getByObjectReference(service, ref);
+        return service.get(ref);
     }
 
     /**

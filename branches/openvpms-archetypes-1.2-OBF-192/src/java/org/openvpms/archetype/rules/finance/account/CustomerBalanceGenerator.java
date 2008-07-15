@@ -283,7 +283,7 @@ public class CustomerBalanceGenerator {
                 "entity", customer.getObjectReference()));
         query.add(constraint);
         query.add(new NodeSortConstraint("startTime", true));
-        query.add(new NodeSortConstraint("uid", true));
+        query.add(new NodeSortConstraint("id", true));
         OrConstraint or = new OrConstraint();
         for (String shortName : shortNames) {
             // duplicate the act short names onto the participation act
