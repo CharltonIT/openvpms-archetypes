@@ -32,8 +32,8 @@ import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
 import org.openvpms.component.system.common.query.ArchetypeQuery;
 import org.openvpms.component.system.common.query.CollectionNodeConstraint;
 import org.openvpms.component.system.common.query.NodeConstraint;
-import org.openvpms.component.system.common.query.NodeSelectConstraint;
 import org.openvpms.component.system.common.query.ObjectRefConstraint;
+import org.openvpms.component.system.common.query.ObjectRefSelectConstraint;
 import org.openvpms.component.system.common.query.ObjectSet;
 import org.openvpms.component.system.common.query.ObjectSetQueryIterator;
 import org.openvpms.component.system.common.query.OrConstraint;
@@ -297,11 +297,11 @@ public class DiscountRules {
             IMObjectReference ref, Date date) {
         List<IMObjectReference> result;
         ShortNameConstraint rel = new ShortNameConstraint(
-                "rel", "entityRelationship.discountProductType", true, true);
+                "rel", "entityRelationship.discountProductType", true, false);
         ArchetypeQuery query = new ArchetypeQuery(
                 new ObjectRefConstraint(ref));
         query.add(new CollectionNodeConstraint("discounts", rel));
-        query.add(new NodeSelectConstraint("rel.target"));
+        query.add(new ObjectRefSelectConstraint("rel.target"));
 
         OrConstraint startTime = new OrConstraint();
         startTime.add(new NodeConstraint("activeStartTime", IsNULL));
@@ -320,7 +320,7 @@ public class DiscountRules {
             result = new ArrayList<IMObjectReference>();
             while (iter.hasNext()) {
                 ObjectSet set = iter.next();
-                result.add(set.getReference("rel.target"));
+                result.add(set.getReference("rel.target.reference"));
             }
         } else {
             result = Collections.emptyList();

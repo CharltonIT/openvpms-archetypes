@@ -342,15 +342,26 @@ public class TestHelper extends Assert {
             party.addContact(contact);
         }
 
-        Lookup currency = getClassification("lookup.currency", "AUD");
-        IMObjectBean ccyBean = new IMObjectBean(currency);
-        ccyBean.setValue("minDenomination", new BigDecimal("0.05"));
-        ccyBean.save();
+        Lookup currency = getCurrency("AUD");
 
         IMObjectBean bean = new IMObjectBean(party);
         bean.setValue("currency", currency.getCode());
         bean.save();
         return party;
+    }
+
+    /**
+     * Returns a currency with the specified currency code, creating it
+     * if it doesn't exist.
+     *
+     * @return the currency
+     */
+    public static Lookup getCurrency(String code) {
+        Lookup currency = getClassification("lookup.currency", code, false);
+        IMObjectBean ccyBean = new IMObjectBean(currency);
+        ccyBean.setValue("minDenomination", new BigDecimal("0.05"));
+        ccyBean.save();
+        return currency;
     }
 
     /**

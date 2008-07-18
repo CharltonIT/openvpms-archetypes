@@ -308,7 +308,7 @@ public class AppointmentQuery {
                 query = new NamedQuery(
                         "act.customerAppointment-clinician", names);
             }
-            query.setParameter("clinicianId", clinician.getLinkId());
+            query.setParameter("clinicianId", clinician.getId());
         } else {
             if (range == WorkflowStatus.StatusRange.INCOMPLETE) {
                 query = new NamedQuery(
@@ -322,7 +322,7 @@ public class AppointmentQuery {
             }
         }
 
-        query.setParameter("scheduleId", schedule.getLinkId());
+        query.setParameter("scheduleId", schedule.getId());
         query.setParameter("from", from);
         query.setParameter("to", to);
         query.setMaxResults(IArchetypeQuery.ALL_RESULTS);

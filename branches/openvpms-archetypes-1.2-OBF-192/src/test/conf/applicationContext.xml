@@ -168,6 +168,14 @@
                     org/openvpms/component/business/dao/hibernate/im/security/ArchetypeAuthorityDO.hbm.xml</value>
                 <value>
                     org/openvpms/component/business/dao/hibernate/im/security/SecurityRoleDO.hbm.xml</value>
+                <value>
+                    /org/openvpms/archetype/rules/product/Product.hbm.xml</value>
+                <value>
+                    /org/openvpms/archetype/rules/workflow/Workflow.hbm.xml</value>
+                <value>
+                    /org/openvpms/archetype/rules/patient/reminder/Reminder.hbm.xml</value>
+                <value>
+                    /org/openvpms/archetype/rules/finance/account/Balance.hbm.xml</value>
             </list>
         </property>
     </bean>

@@ -219,7 +219,7 @@ public class BalanceCalculator {
                 "id", "total", "allocatedTotal", "allocatedAmount",
                 "overdueAllocationTime"));
         query.setMaxResults(ArchetypeQuery.ALL_RESULTS);
-        query.setParameter("customer", customer.getLinkId());
+        query.setParameter("customer", customer.getId());
         query.setParameter("date", date);
         query.setParameter("overdueDate", overdueDate);
 

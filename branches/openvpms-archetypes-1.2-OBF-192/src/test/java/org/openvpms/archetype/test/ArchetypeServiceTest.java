@@ -18,8 +18,6 @@
 
 package org.openvpms.archetype.test;
 
-import org.openvpms.archetype.rules.act.ActStatus;
-import org.openvpms.component.business.domain.im.act.Act;
 import org.openvpms.component.business.domain.im.common.IMObject;
 import org.openvpms.component.business.domain.im.common.IMObjectReference;
 import org.openvpms.component.business.service.archetype.ArchetypeServiceException;
@@ -99,16 +97,6 @@ public abstract class ArchetypeServiceTest
      */
     protected <T extends IMObject> void save(Collection<T> objects) {
         service.save(objects);
-    }
-
-    /**
-     * Helper to post and save an act.
-     *
-     * @param act the act to save
-     */
-    protected void postAndSave(Act act) {
-        act.setStatus(ActStatus.POSTED);
-        save(act);
     }
 
     /**
