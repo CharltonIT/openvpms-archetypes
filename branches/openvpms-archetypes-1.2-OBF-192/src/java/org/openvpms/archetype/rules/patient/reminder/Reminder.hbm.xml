@@ -25,8 +25,8 @@
     <query name="act.patientReminder-count">
         <![CDATA[
 select count(act)
-      from org.openvpms.component.business.dao.hibernate.im.act.ActDO as act,
-      org.openvpms.component.business.dao.hibernate.im.act.ParticipationDO as p
+      from org.openvpms.component.business.dao.hibernate.im.act.ActDOImpl as act,
+      org.openvpms.component.business.dao.hibernate.im.act.ParticipationDOImpl as p
 where p.entity.id = :patientId
       and p.archetypeId.shortName = 'participation.patient'
       and p.act = act
@@ -38,8 +38,8 @@ where p.entity.id = :patientId
     <query name="act.patientAlert-count">
         <![CDATA[
 select count(act)
-      from org.openvpms.component.business.dao.hibernate.im.act.ActDO as act,
-      org.openvpms.component.business.dao.hibernate.im.act.ParticipationDO as p
+      from org.openvpms.component.business.dao.hibernate.im.act.ActDOImpl as act,
+      org.openvpms.component.business.dao.hibernate.im.act.ParticipationDOImpl as p
 where p.entity.id = :patientId
       and p.archetypeId.shortName = 'participation.patient'
       and p.act = act

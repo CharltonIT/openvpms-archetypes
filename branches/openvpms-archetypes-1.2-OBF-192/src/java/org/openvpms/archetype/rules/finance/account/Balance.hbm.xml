@@ -25,9 +25,9 @@
         <![CDATA[
 select e.name, e.archetypeId, e.id, e.linkId, a.archetypeId, a.id, a.linkId,
       a.activityStartTime, a.status, a.total, a.allocatedAmount, a.credit, c.code
-from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDO as p,
-      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDO as a,
-      org.openvpms.component.business.dao.hibernate.im.party.PartyDO as e
+from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDOImpl as p,
+      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDOImpl as a,
+      org.openvpms.component.business.dao.hibernate.im.party.PartyDOImpl as e
 left outer join e.classifications c with c.archetypeId.shortName='lookup.customerAccountType'
 where a = p.act
       and p.entity = e
@@ -42,9 +42,9 @@ order by e.name, e.id, a.activityStartTime
         <![CDATA[
 select e.name, e.archetypeId, e.id, e.linkId, a.archetypeId, a.id, a.linkId,
       a.activityStartTime, a.status, a.total, a.allocatedAmount, a.credit, c.code
-from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDO as p,
-      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDO as a,
-      org.openvpms.component.business.dao.hibernate.im.party.PartyDO as e
+from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDOImpl as p,
+      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDOImpl as a,
+      org.openvpms.component.business.dao.hibernate.im.party.PartyDOImpl as e
 left outer join e.classifications c with c.archetypeId.shortName='lookup.customerAccountType'
 where a = p.act
       and p.entity = e
@@ -60,9 +60,9 @@ order by e.name, e.id, a.activityStartTime
         <![CDATA[
 select e.name, e.archetypeId, e.id, e.linkId, a.archetypeId, a.id, a.linkId,
       a.activityStartTime, a.status, a.total, a.allocatedAmount, a.credit, c.code
-from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDO as p,
-      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDO as a,
-      org.openvpms.component.business.dao.hibernate.im.party.PartyDO as e
+from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDOImpl as p,
+      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDOImpl as a,
+      org.openvpms.component.business.dao.hibernate.im.party.PartyDOImpl as e
 left outer join e.classifications c with c.archetypeId.shortName='lookup.customerAccountType'
 where a = p.act
       and p.entity = e
@@ -78,9 +78,9 @@ order by e.name, e.id, a.activityStartTime
         <![CDATA[
 select e.name, e.archetypeId, e.id, e.linkId, a.archetypeId, a.id, a.linkId,
       a.activityStartTime, a.status, a.total, a.allocatedAmount, a.credit, c.code
-from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDO as p,
-      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDO as a,
-      org.openvpms.component.business.dao.hibernate.im.party.PartyDO as e
+from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDOImpl as p,
+      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDOImpl as a,
+      org.openvpms.component.business.dao.hibernate.im.party.PartyDOImpl as e
 left outer join e.classifications c with c.archetypeId.shortName='lookup.customerAccountType'
 where a = p.act
       and p.entity = e
@@ -96,9 +96,9 @@ order by e.name, e.id, a.activityStartTime
         <![CDATA[
 select e.name, e.archetypeId, e.id, e.linkId, a.archetypeId, a.id, a.linkId,
       a.activityStartTime, a.status, a.total, a.allocatedAmount, a.credit, c.code
-from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDO as p,
-      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDO as a,
-      org.openvpms.component.business.dao.hibernate.im.party.PartyDO as e
+from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDOImpl as p,
+      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDOImpl as a,
+      org.openvpms.component.business.dao.hibernate.im.party.PartyDOImpl as e
 left outer join e.classifications c with c.archetypeId.shortName='lookup.customerAccountType'
 where a = p.act
       and p.entity = e
@@ -115,9 +115,9 @@ order by e.name, e.id, a.activityStartTime
         <![CDATA[
 select e.name, e.archetypeId, e.id, e.linkId, a.archetypeId, a.id, a.linkId,
       a.activityStartTime, a.status, a.total, a.allocatedAmount, a.credit, c.code
-from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDO as p,
-      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDO as a,
-      org.openvpms.component.business.dao.hibernate.im.party.PartyDO as e
+from  org.openvpms.component.business.dao.hibernate.im.act.ParticipationDOImpl as p,
+      org.openvpms.component.business.dao.hibernate.im.act.FinancialActDOImpl as a,
+      org.openvpms.component.business.dao.hibernate.im.party.PartyDOImpl as e
 left outer join e.classifications c with c.archetypeId.shortName='lookup.customerAccountType'
 where a = p.act
       and p.entity = e
