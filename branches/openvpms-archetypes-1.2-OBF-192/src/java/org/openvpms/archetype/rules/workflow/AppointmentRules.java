@@ -128,7 +128,6 @@ public class AppointmentRules {
      * @throws OpenVPMSException for any error
      */
     public boolean hasOverlappingAppointments(Act appointment) {
-        long id = appointment.getId();
         ActBean bean = new ActBean(appointment, service);
         IMObjectReference schedule
                 = bean.getParticipantRef("participation.schedule");
@@ -136,7 +135,7 @@ public class AppointmentRules {
         Date endTime = appointment.getActivityEndTime();
 
         if (startTime != null && endTime != null && schedule != null) {
-            return hasOverlappingAppointments(id, startTime, endTime,
+            return hasOverlappingAppointments(appointment, startTime, endTime,
                                               schedule);
         }
         return false;
@@ -206,21 +205,26 @@ public class AppointmentRules {
     /**
      * Determines if there are acts that overlap with an appointment.
      *
-     * @param id        the appointment id
-     * @param startTime the appointment start time
-     * @param endTime   the appointment end time
-     * @param schedule  the schedule
+     * @param appointment the appointment
+     * @param startTime   the appointment start time
+     * @param endTime     the appointment end time
+     * @param schedule    the schedule
      * @return a list of acts that overlap with the appointment
      * @throws OpenVPMSException for any error
      */
-    private boolean hasOverlappingAppointments(long id, Date startTime,
+    private boolean hasOverlappingAppointments(Act appointment, Date startTime,
                                                Date endTime,
                                                IMObjectReference schedule) {
-        NamedQuery query = new NamedQuery("act.customerAppointment-overlap");
+        String name = (appointment.isNew())
+                ? "act.customerAppointment-overlapNew"
+                : "act.customerAppointment-overlap";
+        NamedQuery query = new NamedQuery(name);
         query.setParameter("startTime", startTime);
         query.setParameter("endTime", endTime);
         query.setParameter("scheduleId", schedule.getId());
-        query.setParameter("actId", id);
+        if (!appointment.isNew()) {
+            query.setParameter("actId", appointment.getId());
+        }
         List<ObjectSet> overlaps = service.getObjects(query).getResults();
         return !overlaps.isEmpty();
 /*

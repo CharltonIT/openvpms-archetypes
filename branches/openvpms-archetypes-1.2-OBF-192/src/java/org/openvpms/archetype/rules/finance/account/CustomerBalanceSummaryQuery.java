@@ -759,12 +759,6 @@ public class CustomerBalanceSummaryQuery implements Iterator<ObjectSet> {
             CollectionNodeConstraint constraint
                     = new CollectionNodeConstraint("customer");
             constraint.add(new ObjectRefNodeConstraint("entity", customer));
-            constraint.add(new ObjectRefNodeConstraint(
-                    "act", new ArchetypeId(shortName)));
-            // re-specify the act short name. to force utilisation of the
-            // (faster) participation index. Ideally would only need to specify
-            // the act short name on participations, but this isn't supported
-            // by ArchetypeQuery.
             query.add(constraint);
             query.add(new NodeSortConstraint("startTime", false));
             query.add(new NodeSelectConstraint("act.startTime"));

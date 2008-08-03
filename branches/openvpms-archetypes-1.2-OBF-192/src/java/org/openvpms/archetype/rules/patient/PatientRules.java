@@ -20,7 +20,6 @@ package org.openvpms.archetype.rules.patient;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.openvpms.archetype.rules.party.MergeException;
-import org.openvpms.component.business.domain.archetype.ArchetypeId;
 import org.openvpms.component.business.domain.im.act.Act;
 import org.openvpms.component.business.domain.im.common.EntityIdentity;
 import org.openvpms.component.business.domain.im.common.EntityRelationship;
@@ -337,12 +336,6 @@ public class PatientRules {
                                                true);
         participation.add(new ObjectRefNodeConstraint(
                 "entity", patient.getObjectReference()));
-        participation.add(new ObjectRefNodeConstraint(
-                "act", new ArchetypeId("act.patientWeight")));
-        // re-specify the act short name. to force utilisation of the
-        // (faster) participation index. Ideally would only need to specify
-        // the act short name on participations, but this isn't supported
-        // by ArchetypeQuery.
         query.add(participation);
         query.add(new NodeSortConstraint("startTime", false));
         query.setMaxResults(1);

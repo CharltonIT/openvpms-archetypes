@@ -33,8 +33,8 @@ where a = p.act
       and p.entity = e
       and p.archetypeId.shortName='participation.customerAccountBalance'
       and (a.status = 'POSTED' or a.status='COMPLETED')
-      and a.activityStartTime <= :startTime
-order by e.name, e.id, a.activityStartTime
+      and p.activityStartTime <= :startTime
+order by e.name, e.id, p.activityStartTime
       ]]>
     </query>
 
@@ -51,8 +51,8 @@ where a = p.act
       and p.archetypeId.shortName='participation.customerAccountBalance'
       and (a.status = 'POSTED' or a.status='COMPLETED')
       and e.name >= :from
-      and a.activityStartTime <= :startTime
-order by e.name, e.id, a.activityStartTime
+      and p.activityStartTime <= :startTime
+order by e.name, e.id, p.activityStartTime
       ]]>
     </query>
 
@@ -69,8 +69,8 @@ where a = p.act
       and p.archetypeId.shortName='participation.customerAccountBalance'
       and (a.status = 'POSTED' or a.status='COMPLETED')
       and e.name >= :from and e.name <= :to
-      and a.activityStartTime <= :startTime
-order by e.name, e.id, a.activityStartTime
+      and p.activityStartTime <= :startTime
+order by e.name, e.id, p.activityStartTime
       ]]>
     </query>
 
@@ -87,8 +87,8 @@ where a = p.act
       and p.archetypeId.shortName='participation.customerAccountBalance'
       and c.id = :accountType
       and (a.status = 'POSTED' or a.status='COMPLETED')
-      and a.activityStartTime <= :startTime
-order by e.name, e.id, a.activityStartTime
+      and p.activityStartTime <= :startTime
+order by e.name, e.id, p.activityStartTime
       ]]>
     </query>
 
@@ -106,8 +106,8 @@ where a = p.act
       and c.id = :accountType
       and (a.status = 'POSTED' or a.status='COMPLETED')
       and e.name >= :from
-      and a.activityStartTime <= :startTime
-order by e.name, e.id, a.activityStartTime
+      and p.activityStartTime <= :startTime
+order by e.name, e.id, p.activityStartTime
       ]]>
     </query>
 
@@ -125,8 +125,8 @@ where a = p.act
       and c.id = :accountType
       and (a.status = 'POSTED' or a.status='COMPLETED')
       and e.name >= :from and e.name <= :to
-      and a.activityStartTime <= :startTime
-order by e.name, e.id, a.activityStartTime
+      and p.activityStartTime <= :startTime
+order by e.name, e.id, p.activityStartTime
       ]]>
     </query>
 

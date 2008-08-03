@@ -45,7 +45,7 @@ where p.entity.id = :patientId
       and p.act = act
       and p.act.archetypeId.shortName='act.patientAlert'
       and act.status = 'IN_PROGRESS'
-      and (act.activityEndTime > :date or act.activityEndTime is null)
+      and (p.activityEndTime > :date or p.activityEndTime is null)
       ]]>
     </query>
 
