@@ -641,6 +641,50 @@ public class CustomerAccountRulesTestCase extends AbstractCustomerAccountTest {
     }
 
     /**
+     * Verifies that older unallocated balances are allocated prior to more
+     * recent ones.
+     */
+    public void testAllocationOrder() {
+        Money sixty = new Money(60);
+        Money forty = new Money(40);
+        Money twenty = new Money(20);
+        Date chargeTime1 = java.sql.Date.valueOf("2007-1-1");
+        Date chargeTime2 = java.sql.Date.valueOf("2007-3-30");
+
+        FinancialAct invoice1 = createChargesInvoice(sixty, chargeTime1);
+        save(invoice1);
+        FinancialAct invoice2 = createChargesInvoice(forty,chargeTime2);
+        save(invoice2);
+
+        java.sql.Date payTime1 = java.sql.Date.valueOf("2007-4-1");
+        FinancialAct payment1 = createPayment(forty, payTime1);
+        save(payment1);
+
+        invoice1 = get(invoice1);
+        invoice2 = get(invoice2);
+        assertEquals(forty, invoice1.getAllocatedAmount());
+        assertEquals(BigDecimal.ZERO, invoice2.getAllocatedAmount());
+
+        java.sql.Date payTime2 = java.sql.Date.valueOf("2007-4-2");
+        FinancialAct payment2 = createPayment(twenty, payTime2);
+        save(payment2);
+
+        invoice1 = get(invoice1);
+        invoice2 = get(invoice2);
+        assertEquals(sixty, invoice1.getAllocatedAmount());
+        assertEquals(BigDecimal.ZERO, invoice2.getAllocatedAmount());
+
+        java.sql.Date payTime3 = java.sql.Date.valueOf("2007-4-3");
+        FinancialAct payment3 = createPayment(forty, payTime3);
+        save(payment3);
+
+        invoice1 = get(invoice1);
+        invoice2 = get(invoice2);
+        assertEquals(sixty, invoice1.getAllocatedAmount());
+        assertEquals(forty, invoice2.getAllocatedAmount());
+    }
+
+    /**
      * Sets up the test case.
      *
      * @throws Exception for any error
