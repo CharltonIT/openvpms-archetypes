@@ -335,6 +335,35 @@ public class PartyRules {
     }
 
     /**
+     * Returns a formatted preferred telephone number for a party.
+     *
+     * @param party the party
+     * @return a formatted telephone number for the party. May be empty if there is no corresponding
+     *         <em>contact.phoneNumber</em> contact
+     */
+    public String getTelephone(Party party) {
+        Contact contact = getContact(party, ContactArchetypes.PHONE, null, false);
+        return (contact != null) ? formatPhone(contact) : "";
+    }
+
+    /**
+     * Returns a formatted preferred telephone number for a party associated with
+     * an act via an <em>participation.customer</em> participation.
+     *
+     * @param act the act
+     * @return a formatted telephone number for the party. May be empty if there is no corresponding
+     *         <em>contact.phoneNumber</em> contact
+     * @throws ArchetypeServiceException for any archetype service error
+     */
+    public String getTelephone(Act act) {
+        Party party = getCustomer(act);
+        if (party == null) {
+            party = getOwner(act);
+        }
+        return (party != null) ? getTelephone(party) : "";
+    }
+
+    /**
      * Returns a formatted home telephone number for a party.
      *
      * @param party the party
@@ -447,7 +476,7 @@ public class PartyRules {
             if (areaCode == null || areaCode.equals("")) {
                 return faxNumber;
             } else {
-                return "(" + areaCode + ")" + faxNumber;
+                return "(" + areaCode + ") " + faxNumber;
             }
         }
         return "";
@@ -602,10 +631,16 @@ public class PartyRules {
             result.append(bean.getString("address", ""));
             result.append("\n");
         }
-        result.append(ArchetypeServiceFunctions.lookup(contact, "suburb", ""));
-        result.append(" ");
-        result.append(ArchetypeServiceFunctions.lookup(contact, "state", ""));
-        result.append(" ");
+        String suburb = ArchetypeServiceFunctions.lookup(contact, "suburb", "");
+        if (!StringUtils.isEmpty(suburb)) {
+            result.append(suburb);
+            result.append(" ");
+        }
+        String state = ArchetypeServiceFunctions.lookup(contact, "state", "");
+        if (!StringUtils.isEmpty(state)) {
+            result.append(state);
+            result.append(" ");
+        }
         result.append(bean.getString("postcode", ""));
         return result.toString();
     }

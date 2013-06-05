@@ -18,16 +18,18 @@
 
 package org.openvpms.archetype.rules.patient;
 
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.openvpms.archetype.rules.act.ActStatus;
+import org.openvpms.archetype.rules.finance.account.CustomerAccountArchetypes;
+import org.openvpms.archetype.rules.finance.account.FinancialTestHelper;
 import org.openvpms.archetype.rules.util.DateRules;
 import org.openvpms.archetype.rules.util.DateUnits;
 import org.openvpms.archetype.test.ArchetypeServiceTest;
 import org.openvpms.archetype.test.TestHelper;
 import org.openvpms.component.business.domain.im.act.Act;
 import org.openvpms.component.business.domain.im.common.IMObjectReference;
+import org.openvpms.component.business.domain.im.datatypes.quantity.Money;
 import org.openvpms.component.business.domain.im.party.Party;
 import org.openvpms.component.business.domain.im.product.Product;
 import org.openvpms.component.business.domain.im.security.User;
@@ -37,6 +39,12 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests the {@link MedicalRecordRules} class.
@@ -142,6 +150,12 @@ public class MedicalRecordRulesTestCase extends ArchetypeServiceTest {
         event3.setStatus(ActStatus.IN_PROGRESS);
         save(event3);
         checkEvent(event3);
+
+        // ensure that where there are 2 events with the same timestamp, the one with the higher id is returned
+        Act event4 = createEvent(getDate("2008-01-01"));
+        event4.setStatus(ActStatus.IN_PROGRESS);
+        save(event4);
+        checkEvent(event4);
     }
 
     /**
@@ -177,6 +191,33 @@ public class MedicalRecordRulesTestCase extends ArchetypeServiceTest {
         // In some cases, it is present, in others it is 00:00:00.
 
         checkEvent(jan2, event1);
+
+        // make sure that when an event has a duplicate timestamp, the earliest (by id) is returned
+        Act event2dup = createEvent(jan3);
+        save(event2dup);
+        checkEvent(jan3, event2);
+    }
+
+    /**
+     * Tests the {@link MedicalRecordRules#addNote} method.
+     */
+    @Test
+    public void testAddNote() {
+        Act event = createEvent();
+        Date startTime = getDate("2012-07-17");
+        User author = TestHelper.createUser();
+        User clinician = TestHelper.createClinician();
+        String text = "Test note";
+        Act note = rules.addNote(event, startTime, text, clinician, author);
+
+        ActBean eventBean = new ActBean(event);
+        assertTrue(eventBean.hasRelationship(PatientArchetypes.CLINICAL_EVENT_ITEM, note));
+        ActBean bean = new ActBean(note);
+        assertEquals(startTime, note.getActivityStartTime());
+        assertEquals(text, bean.getString("note"));
+        assertEquals(patient, bean.getNodeParticipant("patient"));
+        assertEquals(clinician, bean.getNodeParticipant("clinician"));
+        assertEquals(author, bean.getNodeParticipant("author"));
     }
 
     /**
@@ -355,6 +396,28 @@ public class MedicalRecordRulesTestCase extends ArchetypeServiceTest {
 
         // verify that it can be called again with no ill effect
         rules.linkMedicalRecords(event, note);
+    }
+
+    /**
+     * Tests the {@link MedicalRecordRules#linkMedicalRecords(Act, Act)} method passing
+     * an <em>act.customerAccountInvoiceItem</em>.
+     */
+    @Test
+    public void testLinkMedicalRecordsWithInvoiceItem() {
+        Act event = createEvent();
+        Act invoiceItem = FinancialTestHelper.createItem(CustomerAccountArchetypes.INVOICE_ITEM,
+                                                         Money.ONE, patient, TestHelper.createProduct());
+        save(invoiceItem);
+        rules.linkMedicalRecords(event, invoiceItem);
+
+        event = get(event);
+        invoiceItem = get(invoiceItem);
+
+        ActBean eventBean = new ActBean(event);
+        assertTrue(eventBean.hasRelationship(PatientArchetypes.CLINICAL_EVENT_CHARGE_ITEM, invoiceItem));
+
+        // verify that it can be called again with no ill effect
+        rules.linkMedicalRecords(event, invoiceItem);
     }
 
     /**

@@ -254,6 +254,15 @@ public class PartyFunctions {
     }
 
     /**
+     * Marks a patient as being inactive.
+     *
+     * @param patient the patient
+     */
+    public void setPatientInactive(Party patient) {
+        getPatientRules().setInactive(patient);
+    }
+
+    /**
      * Marks a patient as being deceased.
      *
      * @param patient the patient
@@ -417,6 +426,31 @@ public class PartyFunctions {
     }
 
     /**
+     * Retuurns a formatted telephone number for a customer.
+     *
+     * @param party the customer
+     * @return a formatted telephone number. party. May be empty if there is no corresponding
+     *         <em>contact.phoneNumber</em> contact.
+     * @throws ArchetypeServiceException for any archetype service error
+     */
+    public String getTelephone(Party party) {
+        return (party != null) ? getPartyRules().getTelephone(party) : "";
+    }
+
+    /**
+     * Returns a formatted telephone number for a customer associated with
+     * an act via an <em>participation.customer</em> participation.
+     *
+     * @param act the act
+     * @return a formatted telephone number. party. May be empty if there is no corresponding
+     *         <em>contact.phoneNumber</em> contact.
+     * @throws ArchetypeServiceException for any archetype service error
+     */
+    public String getTelephone(Act act) {
+        return (act != null) ? getPartyRules().getTelephone(act) : "";
+    }
+
+    /**
      * Retuurns a formatted home telephone number for a customer.
      *
      * @param party the customer
@@ -481,7 +515,7 @@ public class PartyFunctions {
     }
 
     /**
-     * Retuurns a formatted mobile telephone number for a customer.
+     * Returns a formatted mobile telephone number for a customer.
      *
      * @param party the customer
      * @return a formatted telephone number for the party. May be empty if

@@ -11,40 +11,35 @@
  *  for the specific language governing rights and limitations under the
  *  License.
  *
- *  Copyright 2005 (C) OpenVPMS Ltd. All Rights Reserved.
+ *  Copyright 2012 (C) OpenVPMS Ltd. All Rights Reserved.
 -->
 <archetypes>
-    <archetype name="entityRelationship.supplierRepresentatives.1.0"
-               latest="true"
-               type="org.openvpms.component.business.domain.im.common.EntityRelationship"
-               displayName="Supplier Representative">
+    <archetype name="entityRelationship.userGroup.1.0"
+               latest="true" type="org.openvpms.component.business.domain.im.common.EntityRelationship"
+               displayName="User-Group Relationship">
         <node name="id" path="/id" type="java.lang.Long" hidden="true" readOnly="true"/>
-        <node name="name" type="java.lang.String" path="/name" hidden="true" minCardinality="1" derived="true"
-              derivedValue="'Supplier Representative'"/>
-        <node name="description" type="java.lang.String"
-              path="/description" hidden="true" derived="true"
-              derivedValue="concat('Representative (', date:formatDate(/activeStartTime), ' - ', date:formatDate(/activeEndTime), ')')"/>
-        <node name="activeStartTime" displayName="From Date" path="/activeStartTime"
-              type="java.util.Date" minCardinality="1"
-              defaultValue="java.util.Date.new()"/>
-        <node name="activeEndTime" displayName="To Date" path="/activeEndTime"
-              type="java.util.Date" minCardinality="0"/>
-        <node name="source" displayName="Supplier" path="/source"
+        <node name="name" type="java.lang.String" path="/name"
+              hidden="true" minCardinality="1" derived="true"
+              derivedValue="'User Group'"/>
+        <node name="description" type="java.lang.String" path="/description" hidden="true"/>
+        <node name="activeStartTime" path="/activeStartTime" type="java.util.Date" minCardinality="1"
+              hidden="true" defaultValue="java.util.Date.new()"/>
+        <node name="source" displayName="Group" path="/source"
               type="org.openvpms.component.business.domain.im.common.IMObjectReference" minCardinality="1">
             <assertion name="archetypeRange">
                 <propertyList name="archetypes">
                     <propertyMap name="archetype">
-                        <property name="shortName" value="party.supplierorganisation"/>
+                        <property name="shortName" value="entity.userGroup"/>
                     </propertyMap>
                 </propertyList>
             </assertion>
         </node>
-        <node name="target" displayName="Contact" path="/target"
+        <node name="target" displayName="User" path="/target"
               type="org.openvpms.component.business.domain.im.common.IMObjectReference" minCardinality="1">
             <assertion name="archetypeRange">
                 <propertyList name="archetypes">
                     <propertyMap name="archetype">
-                        <property name="shortName" value="party.supplierperson"/>
+                        <property name="shortName" value="security.user"/>
                     </propertyMap>
                 </propertyList>
             </assertion>

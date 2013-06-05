@@ -18,15 +18,11 @@
 
 package org.openvpms.archetype.rules.patient;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import org.openvpms.archetype.rules.practice.PracticeRules;
 import org.openvpms.archetype.test.ArchetypeServiceTest;
 import org.openvpms.archetype.test.TestHelper;
-import org.openvpms.archetype.rules.practice.PracticeRules;
 import org.openvpms.component.business.domain.im.act.Act;
 import org.openvpms.component.business.domain.im.common.EntityIdentity;
 import org.openvpms.component.business.domain.im.common.EntityRelationship;
@@ -40,6 +36,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -178,6 +179,19 @@ public class PatientRulesTestCase extends ArchetypeServiceTest {
     }
 
     /**
+     * Tests the {@link PatientRules#setInactive(Party)} method.
+     */
+    @Test
+    public void testSetInactive() {
+        Party patient = TestHelper.createPatient(false);
+        assertTrue(patient.isActive());
+
+        rules.setInactive(patient);
+        patient = get(patient);
+        assertFalse(patient.isActive());
+    }
+
+    /**
      * Tests the {@link PatientRules#setDeceased(Party)} and
      * {@link PatientRules#isDeceased(Party)} methods.
      */
@@ -209,12 +223,32 @@ public class PatientRulesTestCase extends ArchetypeServiceTest {
         Party patient = TestHelper.createPatient(false);
         assertNull(rules.getMicrochip(patient));
 
-        EntityIdentity microchip = (EntityIdentity) create(
-                "entityIdentity.microchip");
+        EntityIdentity microchip = (EntityIdentity) create("entityIdentity.microchip");
         IMObjectBean tagBean = new IMObjectBean(microchip);
         tagBean.setValue("microchip", "1234567");
         patient.addIdentity(microchip);
         assertEquals("1234567", rules.getMicrochip(patient));
+
+        microchip.setActive(false);
+        assertNull(rules.getMicrochip(patient));
+    }
+
+    /**
+     * Tests the {@link PatientRules#getPetTag(Party)} method.
+     */
+    @Test
+    public void testGetPetTag() {
+        Party patient = TestHelper.createPatient(false);
+        assertNull(rules.getPetTag(patient));
+
+        EntityIdentity tag = (EntityIdentity) create("entityIdentity.petTag");
+        IMObjectBean tagBean = new IMObjectBean(tag);
+        tagBean.setValue("petTag", "1234567");
+        patient.addIdentity(tag);
+        assertEquals("1234567", rules.getPetTag(patient));
+
+        tag.setActive(false);
+        assertNull(rules.getPetTag(patient));
     }
 
     /**

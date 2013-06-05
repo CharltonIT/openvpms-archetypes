@@ -18,9 +18,6 @@
 
 package org.openvpms.archetype.rules.party;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.openvpms.archetype.test.ArchetypeServiceTest;
@@ -36,6 +33,10 @@ import org.openvpms.component.business.service.archetype.helper.TypeHelper;
 
 import java.util.Collection;
 import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests the {@link PartyRules} class.
@@ -163,16 +164,25 @@ public class PartyRulesTestCase extends ArchetypeServiceTest {
         populateLocation(location, "1 Foo St", null);
 
         // no location with billing address, uses the first available.
-        assertEquals("1 Foo St\nCoburg Victoria 3071",
-                     rules.getBillingAddress(party));
+        assertEquals("1 Foo St\nCoburg Victoria 3071", rules.getBillingAddress(party));
 
         // add a billing location
         Contact billing = createLocation("3 Bar St", "BILLING");
         party.addContact(billing);
 
         // verify the billing address is that just added
-        assertEquals("3 Bar St\nCoburg Victoria 3071",
-                     rules.getBillingAddress(party));
+        assertEquals("3 Bar St\nCoburg Victoria 3071", rules.getBillingAddress(party));
+
+        // verify nulls aren't displayed if the state doesn't exist
+        IMObjectBean locationBean = new IMObjectBean(billing);
+        locationBean.setValue("state", "BAD_STATE");
+        assertEquals("3 Bar St\n3071", rules.getBillingAddress(party));
+
+        // verify nulls aren't displayed if the suburb doesn't exist
+        locationBean.setValue("state", "VIC");
+        locationBean.setValue("suburb", "BAD_SUBURB");
+        assertEquals("3 Bar St\nVictoria 3071", rules.getBillingAddress(party));
+
 
         // remove all the contacts and verify there is no billing address
         Contact[] contacts = party.getContacts().toArray(new Contact[party.getContacts().size()]);
@@ -214,6 +224,43 @@ public class PartyRulesTestCase extends ArchetypeServiceTest {
         }
 
         assertEquals("", rules.getCorrespondenceAddress(party));
+    }
+
+    /**
+     * Tests the {@link PartyRules#getTelephone(Party)} method.
+     */
+    @Test
+    public void testGetTelephone() {
+        Party party = TestHelper.createCustomer(false);
+        Contact phone1 = getContact(party, ContactArchetypes.PHONE);
+        populatePhone(phone1, "12345", false, null);
+
+        assertEquals("(03) 12345", rules.getTelephone(party));
+
+        Contact phone2 = createPhone("56789", true, null);
+        party.addContact(phone2);
+        assertEquals("(03) 56789", rules.getTelephone(party));
+    }
+
+    /**
+     * Tests the {@link PartyRules#getTelephone(Party)} method.
+     */
+    @Test
+    public void testActGetTelephone() {
+        Act act = (Act) create("act.customerEstimation");
+        assertEquals("", rules.getTelephone(act));
+
+        Party party = TestHelper.createCustomer(false);
+        Contact phone1 = getContact(party, ContactArchetypes.PHONE);
+        populatePhone(phone1, "12345", false, null);
+        Contact phone2 = createPhone("56789", true, null);
+        party.addContact(phone2);
+        save(party);
+
+        ActBean bean = new ActBean(act);
+        bean.addParticipation("participation.customer", party);
+
+        assertEquals("(03) 56789", rules.getTelephone(act));
     }
 
     /**
@@ -296,6 +343,25 @@ public class PartyRulesTestCase extends ArchetypeServiceTest {
         bean.addParticipation("participation.customer", party);
 
         assertEquals("(03) 12345", rules.getWorkTelephone(act));
+    }
+
+    /**
+     * Tests the {@link PartyRules#getFaxNumber(Party)} method.
+     */
+    @Test
+    public void testGetFaxNumber() {
+        Party party = TestHelper.createCustomer(false);
+
+        assertEquals("", rules.getFaxNumber(party));
+
+        Contact fax1 = createFax("03", "12345");
+        party.addContact(fax1);
+        assertEquals("(03) 12345", rules.getFaxNumber(party));
+
+        party.removeContact(fax1);
+        Contact fax2 = createFax(null, "12345");
+        party.addContact(fax2);
+        assertEquals("12345", rules.getFaxNumber(party));
     }
 
     /**
@@ -423,6 +489,21 @@ public class PartyRulesTestCase extends ArchetypeServiceTest {
                                 String purpose) {
         Contact contact = (Contact) create(ContactArchetypes.PHONE);
         populatePhone(contact, number, preferred, purpose);
+        return contact;
+    }
+
+    /**
+     * Creates a new <em>contact.faxNumber</em>.
+     *
+     * @param areaCode the area code. May be <tt>null</tt>
+     * @param number   the fax number
+     * @return a new fax contact
+     */
+    private Contact createFax(String areaCode, String number) {
+        Contact contact = (Contact) create(ContactArchetypes.FAX);
+        IMObjectBean bean = new IMObjectBean(contact);
+        bean.setValue("areaCode", areaCode);
+        bean.setValue("faxNumber", number);
         return contact;
     }
 
