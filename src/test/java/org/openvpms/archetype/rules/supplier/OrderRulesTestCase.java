@@ -18,23 +18,20 @@
 
 package org.openvpms.archetype.rules.supplier;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.openvpms.archetype.rules.act.ActStatus;
-import org.openvpms.archetype.rules.finance.tax.TaxRules;
-import org.openvpms.archetype.test.TestHelper;
 import org.openvpms.component.business.domain.im.act.Act;
 import org.openvpms.component.business.domain.im.act.FinancialAct;
 import org.openvpms.component.business.service.archetype.helper.ActBean;
 import org.openvpms.component.business.service.archetype.helper.TypeHelper;
 
 import java.math.BigDecimal;
-import java.util.List;
-
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.List;
 
 
 /**
@@ -267,8 +264,7 @@ public class OrderRulesTestCase extends AbstractSupplierTest {
     @Override
     public void setUp() {
         super.setUp();
-        TaxRules taxRules = new TaxRules(TestHelper.getPractice());
-        rules = new OrderRules(taxRules, getArchetypeService());
+        rules = new OrderRules(getArchetypeService());
     }
 
     /**

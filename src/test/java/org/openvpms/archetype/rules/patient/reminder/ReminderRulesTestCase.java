@@ -12,6 +12,8 @@
  *  License.
  *
  *  Copyright 2006 (C) OpenVPMS Ltd. All Rights Reserved.
+ *
+ *  $Id$
  */
 
 package org.openvpms.archetype.rules.patient.reminder;
@@ -23,7 +25,6 @@ import org.openvpms.archetype.rules.finance.account.CustomerAccountArchetypes;
 import org.openvpms.archetype.rules.finance.account.FinancialTestHelper;
 import org.openvpms.archetype.rules.party.ContactArchetypes;
 import org.openvpms.archetype.rules.patient.PatientArchetypes;
-import org.openvpms.archetype.rules.patient.PatientRules;
 import org.openvpms.archetype.rules.util.DateUnits;
 import org.openvpms.archetype.test.ArchetypeServiceTest;
 import org.openvpms.archetype.test.TestHelper;
@@ -39,8 +40,6 @@ import org.openvpms.component.business.domain.im.product.Product;
 import org.openvpms.component.business.service.archetype.helper.ActBean;
 import org.openvpms.component.business.service.archetype.helper.EntityBean;
 import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
-import org.openvpms.component.business.service.lookup.ILookupService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -63,7 +62,8 @@ import static org.openvpms.archetype.test.TestHelper.getDate;
 /**
  * Tests the {@link ReminderRules} class.
  *
- * @author Tim Anderson
+ * @author <a href="mailto:support@openvpms.org">OpenVPMS Team</a>
+ * @version $LastChangedDate: 2006-05-02 05:16:31Z $
  */
 public class ReminderRulesTestCase extends ArchetypeServiceTest {
 
@@ -71,12 +71,6 @@ public class ReminderRulesTestCase extends ArchetypeServiceTest {
      * The reminder rules.
      */
     private ReminderRules rules;
-
-    /**
-     * The lookup service.
-     */
-    @Autowired
-    private ILookupService lookups;
 
 
     /**
@@ -588,7 +582,7 @@ public class ReminderRulesTestCase extends ArchetypeServiceTest {
      */
     @Before
     public void setUp() {
-        rules = new ReminderRules(getArchetypeService(), new PatientRules(getArchetypeService(), lookups, null));
+        rules = new ReminderRules();
     }
 
     /**

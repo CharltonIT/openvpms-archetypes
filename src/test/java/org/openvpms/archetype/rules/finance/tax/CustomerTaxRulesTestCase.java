@@ -1,26 +1,29 @@
 /*
- * Version: 1.0
+ *  Version: 1.0
  *
- * The contents of this file are subject to the OpenVPMS License Version
- * 1.0 (the 'License'); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.openvpms.org/license/
+ *  The contents of this file are subject to the OpenVPMS License Version
+ *  1.0 (the 'License'); you may not use this file except in compliance with
+ *  the License. You may obtain a copy of the License at
+ *  http://www.openvpms.org/license/
  *
- * Software distributed under the License is distributed on an 'AS IS' basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ *  Software distributed under the License is distributed on an 'AS IS' basis,
+ *  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ *  for the specific language governing rights and limitations under the
+ *  License.
  *
- * Copyright 2013 (C) OpenVPMS Ltd. All Rights Reserved.
+ *  Copyright 2008 (C) OpenVPMS Ltd. All Rights Reserved.
+ *
+ *  $Id$
  */
 
 package org.openvpms.archetype.rules.finance.tax;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.openvpms.archetype.rules.party.ContactArchetypes;
 import org.openvpms.archetype.test.ArchetypeServiceTest;
-import org.openvpms.archetype.test.TestHelper;
 import org.openvpms.component.business.domain.im.act.Act;
 import org.openvpms.component.business.domain.im.act.FinancialAct;
 import org.openvpms.component.business.domain.im.common.Entity;
@@ -35,14 +38,13 @@ import org.openvpms.component.business.service.archetype.helper.ActBean;
 import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
 
 import java.math.BigDecimal;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import java.util.Random;
 
 /**
  * Tests the {@link CustomerTaxRules} class.
  *
- * @author Tim Anderson
+ * @author <a href="mailto:support@openvpms.org">OpenVPMS Team</a>
+ * @version $LastChangedDate: 2006-05-02 05:16:31Z $
  */
 public class CustomerTaxRulesTestCase extends ArchetypeServiceTest {
 
@@ -112,7 +114,7 @@ public class CustomerTaxRulesTestCase extends ArchetypeServiceTest {
      */
     @Before
     public void setUp() {
-        taxType = TestHelper.createTaxType(BigDecimal.TEN);
+        taxType = createTaxType();
         Party practice = (Party) create("party.organisationPractice");
         rules = new CustomerTaxRules(practice);
     }
@@ -234,6 +236,21 @@ public class CustomerTaxRulesTestCase extends ArchetypeServiceTest {
     private ActBean createAct(String shortName) {
         Act act = (Act) create(shortName);
         return new ActBean(act);
+    }
+
+    /**
+     * Helper to create and save a new tax type classification.
+     *
+     * @return a new tax classification
+     */
+    private Lookup createTaxType() {
+        Lookup tax = (Lookup) create("lookup.taxType");
+        IMObjectBean bean = new IMObjectBean(tax);
+        bean.setValue("code", "XTAXRULESTESTCASE_CLASSIFICATION_"
+                              + Math.abs(new Random().nextInt()));
+        bean.setValue("rate", new BigDecimal(10));
+        save(tax);
+        return tax;
     }
 
 }

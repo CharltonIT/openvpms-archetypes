@@ -23,6 +23,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.openvpms.archetype.rules.act.ActStatus;
 import org.openvpms.archetype.rules.patient.PatientArchetypes;
+import org.openvpms.archetype.rules.util.DateRules;
+import org.openvpms.archetype.rules.util.DateUnits;
 import org.openvpms.archetype.test.ArchetypeServiceTest;
 import org.openvpms.archetype.test.TestHelper;
 import org.openvpms.component.business.domain.im.act.Act;
@@ -206,8 +208,9 @@ public class ReminderQueryTestCase extends ArchetypeServiceTest {
                                                   true);
         query.add(new NodeConstraint("status", ActStatus.IN_PROGRESS));
         if (dueFrom != null && dueTo != null) {
-            query.add(new NodeConstraint("endTime", RelationalOp.BTW, dueFrom,
-                                         dueTo));
+            Date from = DateRules.getDate(dueFrom);
+            Date to = DateRules.getDate(DateRules.getDate(dueTo), 1, DateUnits.DAYS);
+            query.add(new NodeConstraint("endTime", RelationalOp.BTW, from, to));
         }
         query.setMaxResults(ArchetypeQuery.ALL_RESULTS);
         IPage<IMObject> page = getArchetypeService().get(query);

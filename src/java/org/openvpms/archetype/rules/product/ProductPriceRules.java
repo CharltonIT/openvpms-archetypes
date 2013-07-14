@@ -1,17 +1,17 @@
 /*
- * Version: 1.0
+ *  Version: 1.0
  *
- * The contents of this file are subject to the OpenVPMS License Version
- * 1.0 (the 'License'); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.openvpms.org/license/
+ *  The contents of this file are subject to the OpenVPMS License Version
+ *  1.0 (the 'License'); you may not use this file except in compliance with
+ *  the License. You may obtain a copy of the License at
+ *  http://www.openvpms.org/license/
  *
- * Software distributed under the License is distributed on an 'AS IS' basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ *  Software distributed under the License is distributed on an 'AS IS' basis,
+ *  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ *  for the specific language governing rights and limitations under the
+ *  License.
  *
- * Copyright 2013 (C) OpenVPMS Ltd. All Rights Reserved.
+ *  Copyright 2008 (C) OpenVPMS Ltd. All Rights Reserved.
  */
 
 package org.openvpms.archetype.rules.product;
@@ -26,11 +26,13 @@ import org.openvpms.component.business.domain.im.party.Party;
 import org.openvpms.component.business.domain.im.product.Product;
 import org.openvpms.component.business.domain.im.product.ProductPrice;
 import org.openvpms.component.business.service.archetype.ArchetypeServiceException;
+import org.openvpms.component.business.service.archetype.ArchetypeServiceHelper;
 import org.openvpms.component.business.service.archetype.IArchetypeService;
 import org.openvpms.component.business.service.archetype.helper.EntityBean;
 import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
 import org.openvpms.component.business.service.archetype.helper.TypeHelper;
 import org.openvpms.component.business.service.lookup.ILookupService;
+import org.openvpms.component.business.service.lookup.LookupServiceHelper;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -50,11 +52,6 @@ import java.util.Set;
 public class ProductPriceRules {
 
     /**
-     * Default maximum discount.
-     */
-    public static final BigDecimal DEFAULT_MAX_DISCOUNT = new BigDecimal("100");
-
-    /**
      * The archetype service.
      */
     private final IArchetypeService service;
@@ -66,7 +63,15 @@ public class ProductPriceRules {
 
 
     /**
-     * Constructs a {@code ProductPriceRules}.
+     * Creates a new <tt>ProductPriceRules</tt>.
+     */
+    public ProductPriceRules() {
+        this(ArchetypeServiceHelper.getArchetypeService(),
+             LookupServiceHelper.getLookupService());
+    }
+
+    /**
+     * Constructs a <tt>ProductPriceRules</tt>.
      *
      * @param service the archetype service
      * @param lookups the lookup service
@@ -83,7 +88,7 @@ public class ProductPriceRules {
      * @param product   the product
      * @param shortName the price short name
      * @param date      the date
-     * @return the first matching price, or {@code null} if none is found
+     * @return the first matching price, or <tt>null</tt> if none is found
      */
     public ProductPrice getProductPrice(Product product, String shortName,
                                         Date date) {
@@ -99,7 +104,7 @@ public class ProductPriceRules {
      * @param price     the price
      * @param shortName the price short name
      * @param date      the date
-     * @return the first matching price, or {@code null} if none is found
+     * @return the first matching price, or <tt>null</tt> if none is found
      */
     public ProductPrice getProductPrice(Product product, BigDecimal price,
                                         String shortName, Date date) {
@@ -113,7 +118,7 @@ public class ProductPriceRules {
      * @param product   the product
      * @param shortName the price short name
      * @param date      the date
-     * @return the first matching price, or {@code null} if none is found
+     * @return the first matching price, or <tt>null</tt> if none is found
      */
     public Set<ProductPrice> getProductPrices(Product product, String shortName, Date date) {
         Set<ProductPrice> result = new HashSet<ProductPrice>();
@@ -136,7 +141,7 @@ public class ProductPriceRules {
     /**
      * Calculates a product price using the following formula:
      * <p/>
-     * {@code price = (cost * (1 + markup/100) ) * (1 + tax/100)}
+     * <tt>price = (cost * (1 + markup/100) ) * (1 + tax/100)</tt>
      *
      * @param product  the product
      * @param cost     the product cost
@@ -164,7 +169,7 @@ public class ProductPriceRules {
     /**
      * Calculates a product markup using the following formula:
      * <p/>
-     * {@code markup = ((price / (cost * ( 1 + tax/100))) - 1) * 100}
+     * <tt>markup = ((price / (cost * ( 1 + tax/100))) - 1) * 100</tt>
      *
      * @param product  the product
      * @param cost     the product cost
@@ -233,19 +238,6 @@ public class ProductPriceRules {
     }
 
     /**
-     * Returns the maximum discount for a product price, expressed as a percentage.
-     *
-     * @param price the price
-     * @return the maximum discount for the product price, or {@code 100} if there is no maximum discount associated
-     *         with the price.
-     */
-    public BigDecimal getMaxDiscount(ProductPrice price) {
-        IMObjectBean bean = new IMObjectBean(price);
-        BigDecimal result = bean.getBigDecimal("maxDiscount");
-        return (result == null) ? DEFAULT_MAX_DISCOUNT : result;
-    }
-
-    /**
      * Updates an <em>productPrice.unitPrice</em> if required.
      *
      * @param price    the price
@@ -253,7 +245,7 @@ public class ProductPriceRules {
      * @param cost     the cost price
      * @param practice the <em>party.organisationPractice</em> used to determine product taxes
      * @param currency the currency, for rounding conventions
-     * @return {@code true} if the price was updated
+     * @return <tt>true</tt> if the price was updated
      */
     private boolean updateUnitPrice(ProductPrice price, Product product,
                                     BigDecimal cost, Party practice,
@@ -287,7 +279,7 @@ public class ProductPriceRules {
      * Returns a percentage / 100.
      *
      * @param percent the percent
-     * @return {@code percent / 100 }
+     * @return <tt>percent / 100 </tt>
      */
     private BigDecimal getRate(BigDecimal percent) {
         if (percent.compareTo(BigDecimal.ZERO) != 0) {
@@ -303,7 +295,7 @@ public class ProductPriceRules {
      * @param product   the product
      * @param predicate the predicate
      * @param date      the date
-     * @return a price matching the predicate, or {@code null} if none is found
+     * @return a price matching the predicate, or <tt>null</tt> if none is found
      */
     private ProductPrice getProductPrice(String shortName, Product product, Predicate predicate, Date date) {
         boolean useDefault = ProductArchetypes.FIXED_PRICE.equals(shortName);
@@ -334,9 +326,10 @@ public class ProductPriceRules {
      *
      * @param product    the product
      * @param predicate  the predicate to evaluate
-     * @param useDefault if {@code true}, select prices that have a
-     *                   {@code true} default node
-     * @return the price matching the criteria, or {@code null} if none is found
+     * @param useDefault if <tt>true</tt>, select prices that have a
+     *                   <tt>true</tt> default node
+     * @return the price matching the criteria, or <tt>null</tt> if none is
+     *         found
      */
     private ProductPrice findPrice(Product product, Predicate predicate,
                                    boolean useDefault) {
@@ -364,9 +357,10 @@ public class ProductPriceRules {
      *
      * @param product   the product
      * @param predicate the predicate
-     * @return the prices matching the predicate
+     * @return the pricees matching the predicate
      */
-    private List<ProductPrice> findPrices(Product product, Predicate predicate) {
+    private List<ProductPrice> findPrices(Product product,
+                                          Predicate predicate) {
         List<ProductPrice> result = null;
         for (ProductPrice price : product.getProductPrices()) {
             if (predicate.evaluate(price)) {
@@ -386,7 +380,7 @@ public class ProductPriceRules {
      * Determines if a fixed price is the default.
      *
      * @param price the price
-     * @return {@code true} if it is the default, otherwise {@code false}
+     * @return <tt>true</tt> if it is the default, otherwise <tt>false</tt>
      */
     private boolean isDefault(ProductPrice price) {
         IMObjectBean bean = new IMObjectBean(price, service);

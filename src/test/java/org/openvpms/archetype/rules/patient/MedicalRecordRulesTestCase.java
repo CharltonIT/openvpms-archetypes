@@ -567,7 +567,7 @@ public class MedicalRecordRulesTestCase extends ArchetypeServiceTest {
     public void setUp() {
         clinician = TestHelper.createClinician();
         patient = TestHelper.createPatient();
-        rules = new MedicalRecordRules(getArchetypeService());
+        rules = new MedicalRecordRules();
     }
 
     /**

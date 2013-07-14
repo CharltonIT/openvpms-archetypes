@@ -1,17 +1,19 @@
 /*
- * Version: 1.0
+ *  Version: 1.0
  *
- * The contents of this file are subject to the OpenVPMS License Version
- * 1.0 (the 'License'); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.openvpms.org/license/
+ *  The contents of this file are subject to the OpenVPMS License Version
+ *  1.0 (the 'License'); you may not use this file except in compliance with
+ *  the License. You may obtain a copy of the License at
+ *  http://www.openvpms.org/license/
  *
- * Software distributed under the License is distributed on an 'AS IS' basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ *  Software distributed under the License is distributed on an 'AS IS' basis,
+ *  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ *  for the specific language governing rights and limitations under the
+ *  License.
  *
- * Copyright 2013 (C) OpenVPMS Ltd. All Rights Reserved.
+ *  Copyright 2006 (C) OpenVPMS Ltd. All Rights Reserved.
+ *
+ *  $Id$
  */
 
 package org.openvpms.archetype.rules.patient;
@@ -23,10 +25,12 @@ import org.openvpms.archetype.rules.util.DateRules;
 import org.openvpms.component.business.domain.im.act.Act;
 import org.openvpms.component.business.domain.im.common.EntityIdentity;
 import org.openvpms.component.business.domain.im.common.EntityRelationship;
+import org.openvpms.component.business.domain.im.common.IMObject;
 import org.openvpms.component.business.domain.im.common.IMObjectReference;
 import org.openvpms.component.business.domain.im.party.Party;
 import org.openvpms.component.business.service.archetype.ArchetypeServiceException;
 import org.openvpms.component.business.service.archetype.ArchetypeServiceFunctions;
+import org.openvpms.component.business.service.archetype.ArchetypeServiceHelper;
 import org.openvpms.component.business.service.archetype.IArchetypeService;
 import org.openvpms.component.business.service.archetype.helper.ActBean;
 import org.openvpms.component.business.service.archetype.helper.EntityBean;
@@ -34,6 +38,7 @@ import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
 import org.openvpms.component.business.service.archetype.helper.IMObjectBeanFactory;
 import org.openvpms.component.business.service.archetype.helper.TypeHelper;
 import org.openvpms.component.business.service.lookup.ILookupService;
+import org.openvpms.component.business.service.lookup.LookupServiceHelper;
 import org.openvpms.component.system.common.query.ArchetypeQuery;
 import org.openvpms.component.system.common.query.Constraints;
 import org.openvpms.component.system.common.query.IMObjectQueryIterator;
@@ -55,7 +60,8 @@ import static org.openvpms.component.system.common.query.ParticipationConstraint
 /**
  * Patient rules.
  *
- * @author Tim Anderson
+ * @author <a href="mailto:support@openvpms.org">OpenVPMS Team</a>
+ * @version $LastChangedDate: 2006-05-02 05:16:31Z $
  */
 public class PatientRules {
 
@@ -81,21 +87,20 @@ public class PatientRules {
 
 
     /**
-     * Constructs a {@code PatientRules}.
+     * Constructs a <tt>PatientRules</tt>.
      *
-     * @param service the archetype service
-     * @param lookups the lookup service
+     * @throws ArchetypeServiceException if the archetype service is not configured
      */
-    public PatientRules(IArchetypeService service, ILookupService lookups) {
-        this(service, lookups, null);
+    public PatientRules() {
+        this(ArchetypeServiceHelper.getArchetypeService(), LookupServiceHelper.getLookupService(), null);
     }
 
     /**
-     * Constructs a {@code PatientRules}.
+     * Construct a new <tt>PatientRules</tt>.
      *
      * @param service   the archetype service
      * @param lookups   the lookup service
-     * @param formatter the patient age formatter. May be {@code null}
+     * @param formatter the patient age formatter. May be <tt>null</tt>
      */
     public PatientRules(IArchetypeService service, ILookupService lookups, PatientAgeFormatter formatter) {
         this.service = service;
@@ -129,7 +134,7 @@ public class PatientRules {
      * closest to the act start time.
      *
      * @param act the act
-     * @return the patient's owner, or {@code null} if none can be found
+     * @return the patient's owner, or <tt>null</tt> if none can be found
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Party getOwner(Act act) {
@@ -143,7 +148,7 @@ public class PatientRules {
      * Returns the owner of a patient.
      *
      * @param patient the patient
-     * @return the patient's owner, or {@code null} if none can be found
+     * @return the patient's owner, or <tt>null</tt> if none can be found
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Party getOwner(Party patient) {
@@ -154,7 +159,7 @@ public class PatientRules {
      * Returns the most current owner of a patient associated with an act.
      *
      * @param act the act
-     * @return the patient's owner, or {@code null} if none can be found
+     * @return the patient's owner, or <tt>null</tt> if none can be found
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Party getCurrentOwner(Act act) {
@@ -169,7 +174,7 @@ public class PatientRules {
      * @param patient   the patient
      * @param startTime the date to search for the ownership
      * @param active    only check active ownerships
-     * @return the patient's owner, or {@code null} if none can be found
+     * @return the patient's owner, or <tt>null</tt> if none can be found
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Party getOwner(Party patient, Date startTime, boolean active) {
@@ -209,7 +214,7 @@ public class PatientRules {
      * Returns a reference to the owner of a patient.
      *
      * @param patient the patient
-     * @return a reference to the owner, or {@code null} if none can be found
+     * @return a reference to the owner, or <tt>null</tt> if none can be found
      */
     public IMObjectReference getOwnerReference(Party patient) {
         EntityBean bean = factory.createEntityBean(patient);
@@ -223,7 +228,7 @@ public class PatientRules {
      *
      * @param customer the customer
      * @param patient  the patient
-     * @return {@code true} if the customer is the owner of the patient
+     * @return <tt>true</tt> if the customer is the owner of the patient
      * @throws ArchetypeServiceException for any archetype service error
      */
     public boolean isOwner(Party customer, Party patient) {
@@ -239,7 +244,7 @@ public class PatientRules {
      *
      * @param patient the patient
      * @param time    the time
-     * @return the referral vet, or {@code null} if none is founds
+     * @return the referral vet, or <tt>null</tt> if none is founds
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Party getReferralVet(Party patient, Date time) {
@@ -283,7 +288,7 @@ public class PatientRules {
      * Determines if a patient is deceased.
      *
      * @param patient the patient
-     * @return {@code true} if the patient is deceased
+     * @return <tt>true</tt> if the patient is deceased
      * @throws ArchetypeServiceException for any archetype service error
      */
     public boolean isDeceased(Party patient) {
@@ -309,7 +314,7 @@ public class PatientRules {
      * Determines if a patient is desexed.
      *
      * @param patient the patient
-     * @return {@code true} if the patient is desexed
+     * @return <tt>true</tt> if the patient is desexed
      * @throws ArchetypeServiceException for any archetype service error
      */
     public boolean isDesexed(Party patient) {
@@ -349,17 +354,6 @@ public class PatientRules {
         ActBean bean = factory.createActBean(act);
         Party patient = (Party) bean.getParticipant("participation.patient");
         return getPatientDesexStatus(patient);
-    }
-
-    /**
-     * Returns the patient date of birth.
-     *
-     * @param patient the patient
-     * @return the patient's date of birth. May be {@code null}
-     */
-    public Date getDateOfBirth(Party patient) {
-        IMObjectBean bean = factory.createBean(patient);
-        return bean.getDate("dateOfBirth");
     }
 
     /**
@@ -446,7 +440,7 @@ public class PatientRules {
      * <em>act.patientWeight</em> for a patient.
      *
      * @param patient the patient
-     * @return the description node or {@code null} if no act can be found
+     * @return the description node or <tt>null</tt> if no act can be found
      */
     public String getPatientWeight(Party patient) {
         String result = null;
@@ -465,7 +459,7 @@ public class PatientRules {
      * <em>act.patientWeight</em> for a patient asscoaited with an Act.
      *
      * @param act the act linked to the patient
-     * @return the description node or {@code null} if no act can be found
+     * @return the description node or <tt>null</tt> if no act can be found
      */
     public String getPatientWeight(Act act) {
         ActBean bean = factory.createActBean(act);
@@ -477,51 +471,30 @@ public class PatientRules {
      * Returns the patient's weight, in kilograms.
      *
      * @param patient the patient
-     * @return the patient's weight in kilograms, or {@code 0} if its weight is not known
+     * @return the patient's weight in kilograms, or <tt>0</tt> if its weight is not known
      */
     public BigDecimal getWeight(Party patient) {
         BigDecimal weight = BigDecimal.ZERO;
-        Act act = getWeightAct(patient);
-        if (act != null) {
-            weight = getWeight(act);
-        }
-        return weight;
-    }
-
-    /**
-     * Returns a patient's weight, in kilograms.
-     *
-     * @param act an <em>act.patientWeight</em>
-     * @return the patient's weight in kilograms, or {@code 0} if its weight is not known
-     */
-    public BigDecimal getWeight(Act act) {
-        IMObjectBean bean = new IMObjectBean(act, service);
-        BigDecimal weight = bean.getBigDecimal("weight", BigDecimal.ZERO);
-        if (!BigDecimal.ZERO.equals(weight)) {
-            String units = bean.getString("units");
-            if ("KILOGRAMS".equals(units)) {
-                // do nothing
-            } else if ("GRAMS".equals(units)) {
-                weight = MathRules.divide(weight, MathRules.ONE_THOUSAND, 2);
-            } else if ("POUNDS".equals(units)) {
-                weight = MathRules.round(weight.multiply(MathRules.ONE_POUND_IN_KILOS));
-            } else {
-                weight = BigDecimal.ZERO;
+        ArchetypeQuery query = createWeightQuery(patient);
+        Iterator<IMObject> iterator = new IMObjectQueryIterator<IMObject>(service, query);
+        if (iterator.hasNext()) {
+            IMObject object = iterator.next();
+            IMObjectBean bean = new IMObjectBean(object, service);
+            weight = bean.getBigDecimal("weight", BigDecimal.ZERO);
+            if (!BigDecimal.ZERO.equals(weight)) {
+                String units = bean.getString("units");
+                if ("KILOGRAMS".equals(units)) {
+                    // do nothing
+                } else if ("GRAMS".equals(units)) {
+                    weight = MathRules.divide(weight, MathRules.ONE_THOUSAND, 2);
+                } else if ("POUNDS".equals(units)) {
+                    weight = MathRules.round(weight.multiply(MathRules.ONE_POUND_IN_KILOS));
+                } else {
+                    weight = BigDecimal.ZERO;
+                }
             }
         }
         return weight;
-    }
-
-    /**
-     * Returns the most recent <em>act.patientWeight</em> for a patient.
-     *
-     * @param patient the patient
-     * @return the most recent weight act, or {@code null} if none is found
-     */
-    public Act getWeightAct(Party patient) {
-        ArchetypeQuery query = createWeightQuery(patient);
-        Iterator<Act> iterator = new IMObjectQueryIterator<Act>(service, query);
-        return (iterator.hasNext()) ? iterator.next() : null;
     }
 
     /**
@@ -581,7 +554,7 @@ public class PatientRules {
      * @param startTime the start time
      * @param r1        the first relationship
      * @param r2        the second relationship
-     * @return {@code true} if the first relationship has a closer start time
+     * @return <tt>true</tt> if the first relationship has a closer start time
      */
     private boolean closerTime(Date startTime, EntityRelationship r1,
                                EntityRelationship r2) {
@@ -592,10 +565,10 @@ public class PatientRules {
     }
 
     /**
-     * Returns the time in milliseconds from a {@code Date}.
+     * Returns the time in milliseconds from a <tt>Date</tt>.
      *
-     * @param date the date. May be {@code null}
-     * @return the time or {@code 0} if the date is {@code null}
+     * @param date the date. May be <tt>null</tt>
+     * @return the time or <tt>0</tt> if the date is <tt>null</tt>
      */
     private long getTime(Date date) {
         return (date != null) ? date.getTime() : 0;
@@ -604,8 +577,8 @@ public class PatientRules {
     /**
      * Helper to return a party given its reference.
      *
-     * @param ref the reference. May be {@code null}
-     * @return the corresponding party or {@code null} if none can be found
+     * @param ref the reference. May be <tt>null</tt>
+     * @return the corresponding party or <tt>null</tt> if none can be found
      * @throws ArchetypeServiceException for any error
      */
     private Party get(IMObjectReference ref) {

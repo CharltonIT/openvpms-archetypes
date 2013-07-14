@@ -12,20 +12,22 @@
  *  License.
  *
  *  Copyright 2010 (C) OpenVPMS Ltd. All Rights Reserved.
+ *
+ *  $Id$
  */
 package org.openvpms.archetype.rules.patient.reminder;
 
-import org.junit.Test;
 import org.openvpms.archetype.rules.act.ActStatus;
-import org.openvpms.archetype.rules.patient.PatientRules;
+import static org.openvpms.archetype.rules.patient.reminder.ReminderTestHelper.*;
 import org.openvpms.archetype.rules.util.DateUnits;
 import org.openvpms.archetype.test.ArchetypeServiceTest;
 import org.openvpms.archetype.test.TestHelper;
+import static org.openvpms.archetype.test.TestHelper.getDate;
 import org.openvpms.component.business.domain.im.act.Act;
 import org.openvpms.component.business.domain.im.common.Entity;
 import org.openvpms.component.business.domain.im.party.Party;
 import org.openvpms.component.business.service.archetype.helper.TypeHelper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,28 +36,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.openvpms.archetype.rules.patient.reminder.ReminderTestHelper.addTemplate;
-import static org.openvpms.archetype.rules.patient.reminder.ReminderTestHelper.assertEquals;
-import static org.openvpms.archetype.rules.patient.reminder.ReminderTestHelper.assertTrue;
-import static org.openvpms.archetype.rules.patient.reminder.ReminderTestHelper.createReminder;
-import static org.openvpms.archetype.rules.patient.reminder.ReminderTestHelper.createReminderType;
-import static org.openvpms.archetype.rules.patient.reminder.ReminderTestHelper.createReminders;
-import static org.openvpms.archetype.test.TestHelper.getDate;
-
 
 /**
  * Tests the {@link DueReminderQuery} class.
  *
- * @author Tim Anderson
+ * @author <a href="mailto:support@openvpms.org">OpenVPMS Team</a>
+ * @version $LastChangedDate: 2006-05-02 05:16:31Z $
  */
 public class DueReminderQueryTestCase extends ArchetypeServiceTest {
-
-    /**
-     * The patient rules.
-     */
-    @Autowired
-    private PatientRules patientRules;
-
 
     /**
      * Tests the query, where no properties are constrained. This should return exactly the same acts as
@@ -126,7 +114,7 @@ public class DueReminderQueryTestCase extends ArchetypeServiceTest {
      */
     @Test
     public void testQueryWithReminderCount() {
-        ReminderRules rules = new ReminderRules(getArchetypeService(), patientRules);
+        ReminderRules rules = new ReminderRules();
 
         Date startDate = getDate("2009-10-16");
         Date expected1stDueDate = getDate("2010-01-16");  // 3 months after start

@@ -1,17 +1,19 @@
 /*
- * Version: 1.0
+ *  Version: 1.0
  *
- * The contents of this file are subject to the OpenVPMS License Version
- * 1.0 (the 'License'); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.openvpms.org/license/
+ *  The contents of this file are subject to the OpenVPMS License Version
+ *  1.0 (the 'License'); you may not use this file except in compliance with
+ *  the License. You may obtain a copy of the License at
+ *  http://www.openvpms.org/license/
  *
- * Software distributed under the License is distributed on an 'AS IS' basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ *  Software distributed under the License is distributed on an 'AS IS' basis,
+ *  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ *  for the specific language governing rights and limitations under the
+ *  License.
  *
- * Copyright 2013 (C) OpenVPMS Ltd. All Rights Reserved.
+ *  Copyright 2005 (C) OpenVPMS Ltd. All Rights Reserved.
+ *
+ *  $Id$
  */
 
 package org.openvpms.archetype.rules.patient.reminder;
@@ -31,6 +33,7 @@ import org.openvpms.component.business.domain.im.party.Contact;
 import org.openvpms.component.business.domain.im.party.Party;
 import org.openvpms.component.business.domain.im.product.Product;
 import org.openvpms.component.business.service.archetype.ArchetypeServiceException;
+import org.openvpms.component.business.service.archetype.ArchetypeServiceHelper;
 import org.openvpms.component.business.service.archetype.IArchetypeService;
 import org.openvpms.component.business.service.archetype.helper.ActBean;
 import org.openvpms.component.business.service.archetype.helper.EntityBean;
@@ -56,7 +59,8 @@ import java.util.Set;
 /**
  * Reminder rules.
  *
- * @author Tim Anderson
+ * @author <a href="mailto:support@openvpms.org">OpenVPMS Team</a>
+ * @version $LastChangedDate$
  */
 public class ReminderRules {
 
@@ -71,7 +75,7 @@ public class ReminderRules {
     private final PatientRules rules;
 
     /**
-     * The reminder type cache. May be {@code null}.
+     * The reminder type cache. May be <tt>null</tt>.
      */
     private final ReminderTypeCache reminderTypes;
 
@@ -84,28 +88,36 @@ public class ReminderRules {
         OVERDUE       // indicates the reminder is overdue
     }
 
+
     /**
-     * Constructs a {@code ReminderRules}.
-     *
-     * @param service      the archetype service
-     * @param patientRules the patient rules
+     * Creates a new <tt>ReminderRules</tt>.
      */
-    public ReminderRules(IArchetypeService service, PatientRules patientRules) {
-        this(service, null, patientRules);
+    public ReminderRules() {
+        this(ArchetypeServiceHelper.getArchetypeService());
     }
 
     /**
-     * Creates a new {@code ReminderRules}.
+     * Creates a new <tt>ReminderRules</tt>.
+     *
+     * @param service the archetype service
+     */
+    public ReminderRules(IArchetypeService service) {
+        this(service, null);
+    }
+
+    /**
+     * Creates a new <tt>ReminderRules</tt>.
      * A reminder type cache can be specified to cache reminders. By default,
      * no cache is used.
      *
      * @param service       the archetype service
-     * @param reminderTypes a cache for reminder types. If {@code null}, no caching is used
-     * @param rules         the patient rules
+     * @param reminderTypes a cache for reminder types. If <tt>null</tt>, no
+     *                      caching is used
      */
-    public ReminderRules(IArchetypeService service, ReminderTypeCache reminderTypes, PatientRules rules) {
+    public ReminderRules(IArchetypeService service,
+                         ReminderTypeCache reminderTypes) {
         this.service = service;
-        this.rules = rules;
+        rules = new PatientRules(service, null, null);
         this.reminderTypes = reminderTypes;
     }
 
@@ -219,7 +231,7 @@ public class ReminderRules {
      * Returns a count of 'in progress' reminders for a patient.
      *
      * @param patient the patient
-     * @return the no. of 'in progress' reminders for {@code patient}
+     * @return the no. of 'in progress' reminders for <tt>patient</tt>
      * @throws ArchetypeServiceException for any error
      */
     public int countReminders(Party patient) {
@@ -235,7 +247,7 @@ public class ReminderRules {
      *
      * @param patient the patient
      * @param date    the date/time
-     * @return the no. of 'in progress' alerts for {@code patient}
+     * @return the no. of 'in progress' alerts for <tt>patient</tt>
      * @throws ArchetypeServiceException for any error
      */
     public int countAlerts(Party patient, Date date) {
@@ -250,9 +262,9 @@ public class ReminderRules {
      * Determines if a reminder is due in the specified date range.
      *
      * @param reminder the reminder
-     * @param from     the 'from' date. May be {@code null}
-     * @param to       the 'to' date. Nay be {@code null}
-     * @return {@code true} if the reminder is due
+     * @param from     the 'from' date. May be <tt>null</tt>
+     * @param to       the 'to' date. Nay be <tt>null</tt>
+     * @return <tt>true</tt> if the reminder is due
      */
     public boolean isDue(Act reminder, Date from, Date to) {
         ActBean bean = new ActBean(reminder, service);
@@ -269,12 +281,12 @@ public class ReminderRules {
      * Determines if a reminder needs to be cancelled, based on its due
      * date and the specified date. Reminders should be cancelled if:
      * <p/>
-     * {@code dueDate + (reminderType.cancelInterval * reminderType.cancelUnits) &lt;= date}
+     * <tt>dueDate + (reminderType.cancelInterval * reminderType.cancelUnits) &lt;= date</tt>
      *
      * @param reminder the reminder
      * @param date     the date
-     * @return {@code true} if the reminder needs to be cancelled,
-     *         otherwise {@code false}
+     * @return <tt>true</tt> if the reminder needs to be cancelled,
+     *         otherwise <tt>false</tt>
      * @throws ArchetypeServiceException for any archetype service error
      */
     public boolean shouldCancel(Act reminder, Date date) {
@@ -318,22 +330,7 @@ public class ReminderRules {
     public void updateReminder(Act reminder, Date lastSent) {
         ActBean bean = new ActBean(reminder, service);
         int count = bean.getInt("reminderCount");
-        updateReminder(reminder, count + 1, lastSent);
-    }
-
-    /**
-     * Updates a reminder that has been successfully sent.
-     * <p/>
-     * This clears the <em>error</em> node.
-     *
-     * @param reminder      the reminder
-     * @param reminderCount the reminder count
-     * @param lastSent      the date when the reminder was sent
-     * @throws ArchetypeServiceException for any archetype service error
-     */
-    public void updateReminder(Act reminder, int reminderCount, Date lastSent) {
-        ActBean bean = new ActBean(reminder, service);
-        bean.setValue("reminderCount", reminderCount);
+        bean.setValue("reminderCount", count + 1);
         bean.setValue("lastSent", lastSent);
         bean.setValue("error", null);
         bean.save();
@@ -345,7 +342,7 @@ public class ReminderRules {
      *
      * @param reminderCount the no. of times a reminder has been sent
      * @param reminderType  the reminder type
-     * @return the corresponding reminder type template, or {@code null}
+     * @return the corresponding reminder type template, or <tt>null</tt>
      *         if none is found
      * @throws ArchetypeServiceException for any archetype service error
      */
@@ -359,7 +356,7 @@ public class ReminderRules {
      * Calculates the next due date for a reminder.
      *
      * @param reminder the reminder
-     * @return the next due date for the reminder, or {@code null}
+     * @return the next due date for the reminder, or <tt>null</tt>
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Date getNextDueDate(Act reminder) {
@@ -377,7 +374,7 @@ public class ReminderRules {
      * Returns the contact for a reminder.
      *
      * @param reminder the reminder
-     * @return the contact, or {@code null} if none is found
+     * @return the contact, or <tt>null</tt> if none is found
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Contact getContact(Act reminder) {
@@ -398,7 +395,7 @@ public class ReminderRules {
      *
      * @param owner    the patient owner
      * @param reminder the reminder
-     * @return the contact, or {@code null} if none is found
+     * @return the contact, or <tt>null</tt> if none is found
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Contact getContact(Party owner, Act reminder) {
@@ -427,7 +424,7 @@ public class ReminderRules {
      * location if there are no contact.locations.
      *
      * @param contacts the contacts
-     * @return a contact, or {@code null} if none is found
+     * @return a contact, or <tt>null</tt> if none is found
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Contact getContact(Set<Contact> contacts) {
@@ -439,7 +436,7 @@ public class ReminderRules {
      * the preferred phone contact if no contact has this classification.
      *
      * @param contacts the contacts
-     * @return a contact, or {@code null} if none is found
+     * @return a contact, or <tt>null</tt> if none is found
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Contact getPhoneContact(Set<Contact> contacts) {
@@ -451,7 +448,7 @@ public class ReminderRules {
      * preferred email contact if no contact has this classification.
      *
      * @param contacts the contacts
-     * @return a contact, or {@code null} if none is found
+     * @return a contact, or <tt>null</tt> if none is found
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Contact getEmailContact(Set<Contact> contacts) {
@@ -487,10 +484,10 @@ public class ReminderRules {
      * For forms not linked to an invoice item that have a product with reminders, a reminder with the nearest due date
      * to that of the form's start time will be returned.
      * <p/>
-     * For forms that don't meet the above, {@code null} is returned.
+     * For forms that don't meet the above, <tt>null</tt> is returned.
      *
      * @param form the form
-     * @return the reminder, or {@code null} if there are no associated reminders
+     * @return the reminder, or <tt>null</tt> if there are no associated reminders
      */
     public Act getDocumentFormReminder(DocumentAct form) {
         Act result;
@@ -553,7 +550,7 @@ public class ReminderRules {
      * If there are multiple reminders for the invoice item, the one with the nearest due date will be returned.
      *
      * @param invoiceItem the invoice item
-     * @return the reminder, or {@code null} if there are no associated reminders
+     * @return the reminder, or <tt>null</tt> if there are no associated reminders
      */
     private Act getInvoiceReminder(Act invoiceItem) {
         Act result = null;
@@ -585,7 +582,7 @@ public class ReminderRules {
      * Returns a product reminder with the nearest due date to that of the forms start time will be returned.
      *
      * @param formBean the <em>act.patientDocumentForm</em> bean
-     * @return the reminder, or {@code null} if there are no reminders associated with the product
+     * @return the reminder, or <tt>null</tt> if there are no reminders associated with the product
      */
     private Act getProductReminder(ActBean formBean) {
         Act result = null;
@@ -614,7 +611,7 @@ public class ReminderRules {
      *
      * @param reminder     the reminder
      * @param reminderType the reminder type
-     * @return {@code true} if the reminder has a matching type or group
+     * @return <tt>true</tt> if the reminder has a matching type or group
      * @throws ArchetypeServiceException for any archetype service error
      */
     protected boolean hasMatchingTypeOrGroup(Act reminder, ReminderType reminderType) {
@@ -640,7 +637,7 @@ public class ReminderRules {
      * Returns the reminder type associated with an act.
      *
      * @param act the act
-     * @return the associated reminder type, or {@code null} if none is found
+     * @return the associated reminder type, or <tt>null</tt> if none is found
      * @throws ArchetypeServiceException for any archetype service error
      */
     protected ReminderType getReminderType(Act act) {
@@ -651,7 +648,7 @@ public class ReminderRules {
      * Returns the reminder type associated with an act.
      *
      * @param bean the act bean
-     * @return the associated reminder type, or {@code null} if none is found
+     * @return the associated reminder type, or <tt>null</tt> if none is found
      * @throws ArchetypeServiceException for any archetype service error
      */
     protected ReminderType getReminderType(ActBean bean) {
@@ -738,7 +735,7 @@ public class ReminderRules {
      * classification.
      *
      * @param contacts   the contacts
-     * @param anyContact if {@code true} any contact with a 'REMINDER'
+     * @param anyContact if <tt>true</tt> any contact with a 'REMINDER'
      *                   classification will be returned. If there is
      *                   no 'REMINDER' contact, the first preferred contact
      *                   with the short name will be returned. If there is
@@ -746,10 +743,10 @@ public class ReminderRules {
      *                   the short name will be returned. If there is no
      *                   contact matching the short name, the first preferred
      *                   contact will be returned.
-     *                   If {@code false} only those contacts of type
+     *                   If <tt>false</tt> only those contacts of type
      *                   <em>shortName</em> will be returned
      * @param shortNames the archetype shortname of the preferred contact
-     * @return a contact, or {@code null} if none is found
+     * @return a contact, or <tt>null</tt> if none is found
      */
     private Contact getContact(Set<Contact> contacts, boolean anyContact, String... shortNames) {
         Contact reminder = null;
@@ -804,7 +801,7 @@ public class ReminderRules {
      * @param startTime    the reminder start time
      * @param dueDate      the reminder due date
      * @param patient      the patient
-     * @param product      the product. May be {@code null}
+     * @param product      the product. May be <tt>null</tt>
      * @return a new reminder
      * @throws ArchetypeServiceException for any error
      */

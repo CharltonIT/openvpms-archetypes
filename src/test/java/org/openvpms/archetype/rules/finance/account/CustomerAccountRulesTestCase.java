@@ -1,27 +1,31 @@
 /*
- * Version: 1.0
+ *  Version: 1.0
  *
- * The contents of this file are subject to the OpenVPMS License Version
- * 1.0 (the 'License'); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.openvpms.org/license/
+ *  The contents of this file are subject to the OpenVPMS License Version
+ *  1.0 (the 'License'); you may not use this file except in compliance with
+ *  the License. You may obtain a copy of the License at
+ *  http://www.openvpms.org/license/
  *
- * Software distributed under the License is distributed on an 'AS IS' basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ *  Software distributed under the License is distributed on an 'AS IS' basis,
+ *  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ *  for the specific language governing rights and limitations under the
+ *  License.
  *
- * Copyright 2013 (C) OpenVPMS Ltd. All Rights Reserved.
+ *  Copyright 2007 (C) OpenVPMS Ltd. All Rights Reserved.
+ *
+ *  $Id$
  */
 
 package org.openvpms.archetype.rules.finance.account;
 
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.openvpms.archetype.rules.act.ActStatus;
-import org.openvpms.archetype.rules.act.FinancialActStatus;
+import static org.openvpms.archetype.rules.finance.account.CustomerAccountArchetypes.BALANCE_PARTICIPATION;
 import org.openvpms.archetype.rules.util.DateRules;
 import org.openvpms.archetype.rules.util.DateUnits;
+import static org.openvpms.archetype.test.TestHelper.getDate;
 import org.openvpms.component.business.domain.im.act.Act;
 import org.openvpms.component.business.domain.im.act.ActRelationship;
 import org.openvpms.component.business.domain.im.act.FinancialAct;
@@ -36,14 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.openvpms.archetype.rules.finance.account.CustomerAccountArchetypes.BALANCE_PARTICIPATION;
-import static org.openvpms.archetype.test.TestHelper.getDate;
 
 /**
  * Tests the {@link CustomerAccountRules} class when triggered by the
@@ -325,12 +321,12 @@ public class CustomerAccountRulesTestCase extends AbstractCustomerAccountTest {
 
         // check the balance for a payment
         checkEquals(hundred,
-                    rules.getBalance(customer, BigDecimal.ZERO, true));
+                     rules.getBalance(customer, BigDecimal.ZERO, true));
 
         // check the balance for a refund
         checkEquals(BigDecimal.ZERO,
-                    rules.getBalance(customer, BigDecimal.ZERO,
-                                     false));
+                     rules.getBalance(customer, BigDecimal.ZERO,
+                                      false));
 
         // simulate payment of 60. Running balance should be 40
         checkEquals(forty, rules.getBalance(customer, sixty, true));
@@ -341,8 +337,8 @@ public class CustomerAccountRulesTestCase extends AbstractCustomerAccountTest {
 
         // check the balance for a payment
         checkEquals(BigDecimal.ZERO,
-                    rules.getBalance(customer, BigDecimal.ZERO,
-                                     true));
+                     rules.getBalance(customer, BigDecimal.ZERO,
+                                      true));
 
         // check the balance for a refund
         checkEquals(ten, rules.getBalance(customer, BigDecimal.ZERO, false));
@@ -495,7 +491,7 @@ public class CustomerAccountRulesTestCase extends AbstractCustomerAccountTest {
 
         save(counters);
         checkEquals(amount.multiply(new BigDecimal(2)),
-                    rules.getUnbilledAmount(getCustomer()));
+                     rules.getUnbilledAmount(getCustomer()));
 
         save(credits);
         checkEquals(amount, rules.getUnbilledAmount(getCustomer()));
@@ -503,7 +499,7 @@ public class CustomerAccountRulesTestCase extends AbstractCustomerAccountTest {
         credit.setStatus(ActStatus.POSTED);
         save(credit);
         checkEquals(amount.multiply(new BigDecimal(2)),
-                    rules.getUnbilledAmount(getCustomer()));
+                     rules.getUnbilledAmount(getCustomer()));
 
         counter.setStatus(ActStatus.POSTED);
         save(counter);
@@ -742,36 +738,11 @@ public class CustomerAccountRulesTestCase extends AbstractCustomerAccountTest {
     }
 
     /**
-     * Tests the {@link CustomerAccountRules#getInvoice(Party)} method.
-     */
-    @Test
-    public void testGetInvoice() {
-        Party customer = getCustomer();
-        assertNull(rules.getInvoice(customer));
-
-        // verify posted, on hold invoices not returned
-        createInvoice(getDate("2013-05-02"), FinancialActStatus.POSTED);
-        createInvoice(getDate("2013-05-02"), FinancialActStatus.ON_HOLD);
-        assertNull(rules.getInvoice(customer));
-
-        FinancialAct invoice2 = createInvoice(getDate("2013-05-02"), FinancialActStatus.COMPLETED);
-        assertEquals(invoice2, rules.getInvoice(customer));
-
-        // verify back-dated IN_PROGRESS invoice returned in preference to COMPLETED invoice
-        FinancialAct invoice3 = createInvoice(getDate("2013-05-01"), FinancialActStatus.IN_PROGRESS);
-        assertEquals(invoice3, rules.getInvoice(customer));
-
-        // verify more recent IN_PROGRESS returned
-        FinancialAct invoice4 = createInvoice(getDate("2013-05-05"), FinancialActStatus.IN_PROGRESS);
-        assertEquals(invoice4, rules.getInvoice(customer));
-    }
-
-    /**
      * Sets up the test case.
      */
     @Before
     public void onSetUp() {
-        rules = new CustomerAccountRules(getArchetypeService());
+        rules = new CustomerAccountRules();
     }
 
     /**
@@ -974,22 +945,6 @@ public class CustomerAccountRulesTestCase extends AbstractCustomerAccountTest {
 
         // check the balance
         checkBalance(BigDecimal.ZERO);
-    }
-
-    /**
-     * Helper to create an invoice with the specified start time and status.
-     *
-     * @param startTime the start time
-     * @param status    the status
-     * @return the invoice
-     */
-    private FinancialAct createInvoice(Date startTime, String status) {
-        List<FinancialAct> invoices = createChargesInvoice(Money.ZERO);
-        FinancialAct invoice = invoices.get(0);
-        invoice.setActivityStartTime(startTime);
-        invoice.setStatus(status);
-        save(invoices);
-        return invoice;
     }
 
 }

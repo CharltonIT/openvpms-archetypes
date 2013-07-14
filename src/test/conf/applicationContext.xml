@@ -1,43 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Version: 1.0
-  ~
-  ~ The contents of this file are subject to the OpenVPMS License Version
-  ~ 1.0 (the 'License'); you may not use this file except in compliance with
-  ~ the License. You may obtain a copy of the License at
-  ~ http://www.openvpms.org/license/
-  ~
-  ~ Software distributed under the License is distributed on an 'AS IS' basis,
-  ~ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
-  ~ for the specific language governing rights and limitations under the
-  ~ License.
-  ~
-  ~ Copyright 2013 (C) OpenVPMS Ltd. All Rights Reserved.
-  -->
-
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!--  Property configuration -->
-    <bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-
-        <property name="ignoreResourceNotFound" value="true"/>
-
+    <bean id="props"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>classpath:hibernate.properties</value>
             </list>
         </property>
-    </bean>
-
-    <bean id="propertyPlaceholderConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="properties" ref="properties"/>
-
-        <!-- allow system properties to override any other property source -->
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
     </bean>
 
     <!--  The MySQL DataSource -->
@@ -68,20 +42,59 @@
                 <prop key="hibernate.jdbc.use_scrollable_resultset">true</prop>
                 <prop key="hibernate.cache.use_query_cache">true</prop>
                 <prop key="hibernate.cache.provider_class">
-                    ${hibernate.cache.provider_class}
-                </prop>
+                    ${hibernate.cache.provider_class}</prop>
                 <prop key="hibernate.cache.use_second_level_cache">
-                    ${hibernate.cache.use_second_level_cache}
-                </prop>
+                    ${hibernate.cache.use_second_level_cache}</prop>
                 <prop key="hibernate.jdbc.batch_size">
-                    ${hibernate.jdbc.batch_size}
-                </prop>
+                    ${hibernate.jdbc.batch_size}</prop>
             </props>
         </property>
-        <property name="mappingLocations">
+        <property name="mappingResources">
             <list>
-                <value>classpath*:org/openvpms/component/business/dao/**/*.hbm.xml</value>
-                <value>classpath*:org/openvpms/archetype/rules/**/*.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/act/ActDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/act/ActRelationshipDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/act/ParticipationDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/archetype/ActionTypeDescriptorDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/archetype/ArchetypeDescriptorDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/archetype/AssertionDescriptorDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/archetype/AssertionTypeDescriptorDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/archetype/NodeDescriptorDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/document/DocumentDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/audit/AuditRecord.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/entity/EntityDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/entity/EntityIdentityDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/entity/EntityRelationshipDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/lookup/LookupDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/lookup/LookupRelationshipDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/party/ContactDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/product/ProductPriceDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/security/ArchetypeAuthorityDOImpl.hbm.xml</value>
+                <value>
+                    org/openvpms/component/business/dao/hibernate/im/security/SecurityRoleDOImpl.hbm.xml</value>
+                <value>
+                    /org/openvpms/archetype/rules/workflow/Workflow.hbm.xml</value>
+                <value>
+                    /org/openvpms/archetype/rules/patient/reminder/Reminder.hbm.xml</value>
+                <value>
+                    /org/openvpms/archetype/rules/finance/account/Balance.hbm.xml</value>
             </list>
         </property>
     </bean>
@@ -128,10 +141,9 @@
           class="org.openvpms.component.business.service.archetype.ArchetypeServiceHelper">
         <constructor-arg ref="archetypeService"/>
     </bean>
-
+    
     <bean id="reminderRules" class="org.openvpms.archetype.rules.patient.reminder.ReminderRules">
         <constructor-arg ref="defaultArchetypeService"/>
-        <constructor-arg ref="patientRules"/>
     </bean>
 
     <bean id="customerRules" class="org.openvpms.archetype.rules.party.CustomerRules">
@@ -150,13 +162,20 @@
                 <entry key="lookup"
                        value="org.openvpms.archetype.function.lookup.LookupFunctions"/>
                 <entry key="party">
-                    <bean class="org.openvpms.archetype.function.party.PartyFunctions">
-                        <constructor-arg index="0" ref="archetypeService"/>
-                        <constructor-arg index="1" ref="patientRules"/>
-                    </bean>
+                    <bean class="org.openvpms.archetype.function.party.PartyFunctions"/>
                 </entry>
                 <entry key="math">
                     <bean class="org.openvpms.archetype.function.math.MathFunctions"/>
+                </entry>
+                <entry key="macro">
+                    <bean class="org.openvpms.archetype.function.macro.MacroFunctions">
+                        <constructor-arg index="0">
+                            <bean class="org.openvpms.archetype.util.MacroCache">
+                                <constructor-arg index="0" ref="lookupService"/>
+                                <constructor-arg index="1" ref="archetypeService"/>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
                 </entry>
                 <entry key="reminder">
                     <bean class="org.openvpms.archetype.function.reminder.ReminderFunctions">
@@ -230,14 +249,6 @@
         <constructor-arg ref="lookupService"/>
     </bean>
 
-    <bean id="patientRules" class="org.openvpms.archetype.rules.patient.PatientRules">
-        <constructor-arg ref="archetypeService"/>
-        <constructor-arg ref="lookupService"/>
-        <constructor-arg>
-            <null/>
-        </constructor-arg>
-    </bean>
-
     <bean id="imObjectBeanFactory" class="org.openvpms.component.business.service.archetype.helper.IMObjectBeanFactory">
         <constructor-arg ref="archetypeService"/>
     </bean>
@@ -245,8 +256,7 @@
     <bean id="appointmentService"
           class="org.openvpms.archetype.rules.workflow.AppointmentService">
         <constructor-arg ref="archetypeService" index="0"/>
-        <constructor-arg ref="lookupService" index="1"/>
-        <constructor-arg index="2">
+        <constructor-arg index="1">
             <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean">
                 <property name="diskPersistent" value="false"/>
                 <property name="cacheName" value="lookupCache"/>
@@ -260,8 +270,7 @@
     <bean id="taskService"
           class="org.openvpms.archetype.rules.workflow.TaskService">
         <constructor-arg ref="archetypeService" index="0"/>
-        <constructor-arg ref="lookupService" index="1"/>
-        <constructor-arg index="2">
+        <constructor-arg index="1">
             <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean">
                 <property name="diskPersistent" value="false"/>
                 <property name="cacheName" value="lookupCache"/>

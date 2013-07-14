@@ -1,17 +1,19 @@
 /*
- * Version: 1.0
+ *  Version: 1.0
  *
- * The contents of this file are subject to the OpenVPMS License Version
- * 1.0 (the 'License'); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.openvpms.org/license/
+ *  The contents of this file are subject to the OpenVPMS License Version
+ *  1.0 (the 'License'); you may not use this file except in compliance with
+ *  the License. You may obtain a copy of the License at
+ *  http://www.openvpms.org/license/
  *
- * Software distributed under the License is distributed on an 'AS IS' basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ *  Software distributed under the License is distributed on an 'AS IS' basis,
+ *  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ *  for the specific language governing rights and limitations under the
+ *  License.
  *
- * Copyright 2013 (C) OpenVPMS Ltd. All Rights Reserved.
+ *  Copyright 2006 (C) OpenVPMS Ltd. All Rights Reserved.
+ *
+ *  $Id$
  */
 
 package org.openvpms.archetype.rules.patient;
@@ -44,19 +46,14 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the {@link PatientRules} class.
  *
- * @author Tim Anderson
+ * @author <a href="mailto:support@openvpms.org">OpenVPMS Team</a>
+ * @version $LastChangedDate: 2006-05-02 05:16:31Z $
  */
 public class PatientRulesTestCase extends ArchetypeServiceTest {
 
-    /**
-     * The lookup service.
-     */
     @Autowired
     private LookupService lookups;
 
-    /**
-     * The bean factory.
-     */
     @Autowired
     private IMObjectBeanFactory factory;
 
@@ -274,8 +271,7 @@ public class PatientRulesTestCase extends ArchetypeServiceTest {
         Date birthDate = getDate("2010-01-01");
         bean.setValue("dateOfBirth", birthDate);
         String age = rules.getPatientAge(patient);
-        PatientAgeFormatter formatter = new PatientAgeFormatter(lookups, new PracticeRules(getArchetypeService()),
-                                                                factory);
+        PatientAgeFormatter formatter = new PatientAgeFormatter(lookups, new PracticeRules(), factory);
         String expected = formatter.format(birthDate);
         assertEquals(expected, age);
     }
@@ -292,8 +288,7 @@ public class PatientRulesTestCase extends ArchetypeServiceTest {
         bean.setValue("dateOfBirth", birth);
         bean.setValue("deceasedDate", deceased);
         String age = rules.getPatientAge(patient);
-        PatientAgeFormatter formatter = new PatientAgeFormatter(lookups, new PracticeRules(getArchetypeService()),
-                                                                factory);
+        PatientAgeFormatter formatter = new PatientAgeFormatter(lookups, new PracticeRules(), factory);
         String expected = formatter.format(birth, deceased);
         assertEquals(expected, age);
     }
@@ -303,7 +298,7 @@ public class PatientRulesTestCase extends ArchetypeServiceTest {
      */
     @Before
     public void setUp() {
-        rules = new PatientRules(getArchetypeService(), lookups);
+        rules = new PatientRules(getArchetypeService(), null, null);
     }
 
     /**

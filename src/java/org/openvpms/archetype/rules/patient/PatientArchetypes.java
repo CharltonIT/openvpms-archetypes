@@ -1,17 +1,19 @@
 /*
- * Version: 1.0
+ *  Version: 1.0
  *
- * The contents of this file are subject to the OpenVPMS License Version
- * 1.0 (the 'License'); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.openvpms.org/license/
+ *  The contents of this file are subject to the OpenVPMS License Version
+ *  1.0 (the 'License'); you may not use this file except in compliance with
+ *  the License. You may obtain a copy of the License at
+ *  http://www.openvpms.org/license/
  *
- * Software distributed under the License is distributed on an 'AS IS' basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ *  Software distributed under the License is distributed on an 'AS IS' basis,
+ *  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ *  for the specific language governing rights and limitations under the
+ *  License.
  *
- * Copyright 2013 (C) OpenVPMS Ltd. All Rights Reserved.
+ *  Copyright 2008 (C) OpenVPMS Ltd. All Rights Reserved.
+ *
+ *  $Id$
  */
 
 package org.openvpms.archetype.rules.patient;
@@ -20,7 +22,8 @@ package org.openvpms.archetype.rules.patient;
 /**
  * Patient archetypes.
  *
- * @author Tim Anderson
+ * @author <a href="mailto:support@openvpms.org">OpenVPMS Team</a>
+ * @version $LastChangedDate: 2006-05-02 05:16:31Z $
  */
 public class PatientArchetypes {
 
@@ -28,16 +31,6 @@ public class PatientArchetypes {
      * Patient archetype.
      */
     public static final String PATIENT = "party.patientpet";
-
-    /**
-     * Referred from relationship short name.
-     */
-    public static final String REFERRED_FROM = "entityRelationship.referredFrom";
-
-    /**
-     * Referred to relationship short name.
-     */
-    public static final String REFERRED_TO = "entityRelationship.referredTo";
 
     /**
      * Patient medication act short name.
@@ -81,7 +74,7 @@ public class PatientArchetypes {
      */
     public static final String CLINICAL_PROBLEM = "act.patientClinicalProblem";
 
-    /**
+       /**
      * Clinical problem item act relationship short name,
      */
     public static String CLINICAL_PROBLEM_ITEM = "actRelationship.patientClinicalProblemItem";
@@ -130,14 +123,4 @@ public class PatientArchetypes {
      * Patient alert act short name.
      */
     public static final String ALERT = "act.patientAlert";
-
-    /**
-     * Patient prescription act short name.
-     */
-    public static final String PRESCRIPTION = "act.patientPrescription";
-
-    /**
-     * Prescription medication relationship short name.
-     */
-    public static final String PRESCRIPTION_MEDICATION = "actRelationship.patientPrescriptionMedication";
 }

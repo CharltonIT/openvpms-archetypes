@@ -11,7 +11,9 @@
  *  for the specific language governing rights and limitations under the
  *  License.
  *
- *  Copyright 2008-2013 (C) OpenVPMS Ltd. All Rights Reserved.
+ *  Copyright 2008 (C) OpenVPMS Ltd. All Rights Reserved.
+ *
+ *  $Id$
  */
 
 package org.openvpms.archetype.rules.supplier;
@@ -20,7 +22,8 @@ package org.openvpms.archetype.rules.supplier;
 /**
  * Supplier archetype short names.
  *
- * @author Tim Anderson
+ * @author <a href="mailto:support@openvpms.org">OpenVPMS Team</a>
+ * @version $LastChangedDate: 2006-05-02 05:16:31Z $
  */
 public class SupplierArchetypes {
 
@@ -32,17 +35,8 @@ public class SupplierArchetypes {
     /**
      * Supplier organisation short name.
      */
-    public static final String SUPPLIER_ORGANISATION = "party.supplierorganisation";
-
-    /**
-     * Veterinarian supplier short name.
-     */
-    public static final String SUPPLIER_VET = "party.supplierVeterinarian";
-
-    /**
-     * Veterinary practice supplier short name.
-     */
-    public static final String SUPPLIER_VET_PRACTICE = "party.supplierVeterinaryPractice";
+    public static final String SUPPLIER_ORGANISATION
+            = "party.supplierorganisation";
 
     /**
      * Supplier order act short name.
@@ -140,26 +134,6 @@ public class SupplierArchetypes {
      */
     public static final String CREDIT_ITEM_RELATIONSHIP
             = "actRelationship.supplierAccountCreditItem";
-
-    /**
-     * Supplier payment act short name.
-     */
-    public static final String PAYMENT = "act.supplierAccountPayment";
-
-    /**
-     * Supplier cash payment item act short name.
-     */
-    public static final String PAYMENT_CASH = "act.supplierAccountPaymentCash";
-
-    /**
-     * Supplier refund act short name.
-     */
-    public static final String REFUND = "act.supplierAccountRefund";
-
-    /**
-     * Supplier cash refund act short name.
-     */
-    public static final String REFUND_CASH = "act.supplierAccountRefundCash";
 
     /**
      * Supplier participation short name.

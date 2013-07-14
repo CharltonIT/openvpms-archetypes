@@ -28,6 +28,7 @@ import org.openvpms.component.business.domain.im.common.IMObjectReference;
 import org.openvpms.component.business.domain.im.party.Party;
 import org.openvpms.component.business.domain.im.security.User;
 import org.openvpms.component.business.service.archetype.ArchetypeServiceException;
+import org.openvpms.component.business.service.archetype.ArchetypeServiceHelper;
 import org.openvpms.component.business.service.archetype.IArchetypeService;
 import org.openvpms.component.business.service.archetype.helper.ActBean;
 import org.openvpms.component.business.service.archetype.helper.DescriptorHelper;
@@ -60,7 +61,8 @@ import java.util.Set;
 /**
  * Patient medical record rules.
  *
- * @author Tim Anderson
+ * @author <a href="mailto:support@openvpms.org">OpenVPMS Team</a>
+ * @version $LastChangedDate: 2006-05-02 05:16:31Z $
  */
 public class MedicalRecordRules {
 
@@ -86,7 +88,14 @@ public class MedicalRecordRules {
 
 
     /**
-     * Creates a {@link MedicalRecordRules}.
+     * Creates a new <tt>MedicalRecordRules</tt>.
+     */
+    public MedicalRecordRules() {
+        this(ArchetypeServiceHelper.getArchetypeService());
+    }
+
+    /**
+     * Creates a new <tt>MedicalRecordRules</tt>.
      *
      * @param service the archetype service
      */
@@ -176,15 +185,15 @@ public class MedicalRecordRules {
      * Links a patient medical record to an <em>act.patientClinicalEvent</em>,
      * and optionally an <em>act.patientClinicalProblem</em>, if no relationship exists.
      * <p/>
-     * If {@code problem} is specified:
+     * If <tt>problem</tt> is specified:
      * <ul>
      * <li>it will be linked to the event, if no relationship exists
      * <li>any of its items not presently linked to the event will be linked
      * </ul>
      *
      * @param event   the <em>act.patientClinicalEvent</em>
-     * @param problem the <em>act.patientClinicalProblem</em>. May be {@code null}
-     * @param item    the patient medical record or charge item. May be {@code null}
+     * @param problem the <em>act.patientClinicalProblem</em>. May be <tt>null</tt>
+     * @param item    the patient medical record or charge item. May be <tt>null</tt>
      * @throws ArchetypeServiceException for any archetype service error
      */
     public void linkMedicalRecords(Act event, Act problem, Act item) {
@@ -285,7 +294,7 @@ public class MedicalRecordRules {
      *
      * @param patient   the patient
      * @param startTime the start time
-     * @param clinician the clinician. May be {@code null}
+     * @param clinician the clinician. May be <tt>null</tt>
      * @return an event. May be newly created
      */
     public Act getEventForAddition(Party patient, Date startTime, Entity clinician) {
@@ -308,7 +317,7 @@ public class MedicalRecordRules {
      *
      * @param patient   the patient
      * @param startTime the start time
-     * @param clinician the clinician. May be {@code null}
+     * @param clinician the clinician. May be <tt>null</tt>
      * @return an event. May be newly created
      */
     public Act getEventForAddition(IMObjectReference patient, Date startTime, IMObjectReference clinician) {
@@ -321,7 +330,7 @@ public class MedicalRecordRules {
      *
      * @param patient   the patient
      * @param startTime the event start time
-     * @param clinician the clinician. May be {@code null}
+     * @param clinician the clinician. May be <tt>null</tt>
      * @return a new event
      */
     public Act createEvent(Party patient, Date startTime, Entity clinician) {
@@ -370,8 +379,8 @@ public class MedicalRecordRules {
      *
      * @param patient the patient
      * @return the corresponding <em>act.patientClinicalEvent</em> or
-     *         {@code null} if none is found. The event may be
-     *         <em>IN_PROGRESS</em> or <em>COMPLETED}
+     *         <tt>null</tt> if none is found. The event may be
+     *         <em>IN_PROGRESS</em> or <em>COMPLETED</tt>
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Act getEvent(Party patient) {
@@ -383,8 +392,8 @@ public class MedicalRecordRules {
      *
      * @param patient the patient
      * @return the corresponding <em>act.patientClinicalEvent</em> or
-     *         {@code null} if none is found. The event may be
-     *         <em>IN_PROGRESS</em> or <em>COMPLETED}
+     *         <tt>null</tt> if none is found. The event may be
+     *         <em>IN_PROGRESS</em> or <em>COMPLETED</tt>
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Act getEvent(IMObjectReference patient) {
@@ -407,8 +416,8 @@ public class MedicalRecordRules {
      * @param patient the patient
      * @param date    the date
      * @return the corresponding <em>act.patientClinicalEvent</em> or
-     *         {@code null} if none is found. The event may be
-     *         <em>IN_PROGRESS</em> or <em>COMPLETED}
+     *         <tt>null</tt> if none is found. The event may be
+     *         <em>IN_PROGRESS</em> or <em>COMPLETED</tt>
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Act getEvent(Party patient, Date date) {
@@ -428,8 +437,8 @@ public class MedicalRecordRules {
      * @param patient the patient reference
      * @param date    the date
      * @return the corresponding <em>act.patientClinicalEvent</em> or
-     *         {@code null} if none is found. The event may be
-     *         <em>IN_PROGRESS</em> or <em>COMPLETED}
+     *         <tt>null</tt> if none is found. The event may be
+     *         <em>IN_PROGRESS</em> or <em>COMPLETED</tt>
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Act getEvent(IMObjectReference patient, Date date) {
@@ -480,7 +489,7 @@ public class MedicalRecordRules {
      *
      * @param patient   the patient reference
      * @param startTime the event start time
-     * @param clinician the clinician reference. May be {@code null}
+     * @param clinician the clinician reference. May be <tt>null</tt>
      * @return a new event
      */
     private Act createEvent(IMObjectReference patient, Date startTime, IMObjectReference clinician) {
@@ -616,7 +625,7 @@ public class MedicalRecordRules {
      * @param events    the cache of events keyed on patient reference
      * @param patient   the patient to use
      * @param timestamp the time to select the event
-     * @param clinician the clinician to use when creating new events. May be {@code null}
+     * @param clinician the clinician to use when creating new events. May be <tt>null</tt>
      * @return an event
      */
     private Act getEventForAddition(Map<IMObjectReference, List<Act>> events, IMObjectReference patient, Date timestamp,
@@ -674,7 +683,7 @@ public class MedicalRecordRules {
      *
      * @param event     the event
      * @param startTime the act start time
-     * @return {@code true} if the event can be added to, otherwise {@code false}
+     * @return <tt>true</tt> if the event can be added to, otherwise <tt>false</tt>
      */
     private boolean canAddToEvent(Act event, Date startTime) {
         boolean result = true;
@@ -734,7 +743,7 @@ public class MedicalRecordRules {
      * Returns the first clinician found in a Collection of Acts.
      *
      * @param acts a collection of Acts
-     * @return the clinician, or {@code null} if none is found
+     * @return the clinician, or <tt>null</tt> if none is found
      * @throws ArchetypeServiceException for any error
      */
     private IMObjectReference getClinician(Collection<Act> acts) {
