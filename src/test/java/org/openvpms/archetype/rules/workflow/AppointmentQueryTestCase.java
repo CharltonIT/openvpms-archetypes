@@ -95,8 +95,8 @@ public class AppointmentQueryTestCase extends ArchetypeServiceTest {
             assertEquals(appointments[i].getObjectReference(),
                          set.get(ScheduleEvent.ACT_REFERENCE));
             assertEquals(startTimes[i],
-                         set.get(ScheduleEvent.ACT_START_TIME));
-            assertEquals(endTimes[i], set.get(ScheduleEvent.ACT_END_TIME));
+                         getTimestamp(set.getDate(ScheduleEvent.ACT_START_TIME)));
+            assertEquals(endTimes[i], getTimestamp(set.getDate(ScheduleEvent.ACT_END_TIME)));
             assertEquals(appointments[i].getStatus(),
                          set.get(ScheduleEvent.ACT_STATUS));
             assertEquals(appointments[i].getReason(),

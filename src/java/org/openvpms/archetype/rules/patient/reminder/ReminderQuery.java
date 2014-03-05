@@ -29,15 +29,18 @@ import org.openvpms.component.business.service.archetype.ArchetypeServiceHelper;
 import org.openvpms.component.business.service.archetype.IArchetypeService;
 import org.openvpms.component.system.common.query.ArchetypeQuery;
 import org.openvpms.component.system.common.query.Constraints;
-import org.openvpms.component.system.common.query.IMObjectQueryIterator;
 import org.openvpms.component.system.common.query.IdConstraint;
+import org.openvpms.component.system.common.query.NodeSelectConstraint;
 import org.openvpms.component.system.common.query.ObjectRefNodeConstraint;
+import org.openvpms.component.system.common.query.ObjectSelectConstraint;
+import org.openvpms.component.system.common.query.ObjectSetQueryIterator;
 import org.openvpms.component.system.common.query.ShortNameConstraint;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 /**
@@ -151,14 +154,14 @@ public class ReminderQuery {
     public Iterable<Act> query() {
         return new Iterable<Act>() {
             public Iterator<Act> iterator() {
-                return new IMObjectQueryIterator<Act>(service, createQuery());
+                return new DelegatingIterator(new ObjectSetQueryIterator(service, createQuery()));
             }
         };
     }
 
     /**
      * Executes the query.
-     * 
+     *
      * @return a list of the reminder acts matching the query criteria
      */
     public List<Act> execute() {
@@ -179,6 +182,11 @@ public class ReminderQuery {
         ArchetypeQuery query = new ArchetypeQuery(act);
         query.setMaxResults(1000);
         query.setDistinct(true);
+
+        query.add(new ObjectSelectConstraint("act"));
+        query.add(new NodeSelectConstraint("customer", "name"));
+        query.add(new NodeSelectConstraint("patient", "name"));
+        query.add(new NodeSelectConstraint("act", "endTime"));
 
         query.add(Constraints.eq("status", ReminderStatus.IN_PROGRESS));
 
@@ -221,5 +229,52 @@ public class ReminderQuery {
         return query;
     }
 
+    private static final class DelegatingIterator implements Iterator<Act> {
+
+        private final ObjectSetQueryIterator iterator;
+
+        public DelegatingIterator(ObjectSetQueryIterator iterator) {
+            this.iterator = iterator;
+        }
+
+        /**
+         * Returns {@code true} if the iteration has more elements.
+         * (In other words, returns {@code true} if {@link #next} would
+         * return an element rather than throwing an exception.)
+         *
+         * @return {@code true} if the iteration has more elements
+         */
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        /**
+         * Returns the next element in the iteration.
+         *
+         * @return the next element in the iteration
+         * @throws NoSuchElementException if the iteration has no more elements
+         */
+        @Override
+        public Act next() {
+            return (Act) iterator.next().get("act");
+        }
+
+        /**
+         * Removes from the underlying collection the last element returned
+         * by this iterator (optional operation).
+         *
+         * @throws UnsupportedOperationException if the {@code remove}
+         *                                       operation is not supported by this iterator
+         * @throws IllegalStateException         if the {@code next} method has not
+         *                                       yet been called, or the {@code remove} method has already
+         *                                       been called after the last call to the {@code next}
+         *                                       method
+         */
+        @Override
+        public void remove() {
+            iterator.remove();
+        }
+    }
 
 }

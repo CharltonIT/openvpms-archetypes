@@ -92,8 +92,8 @@ public class TaskQueryTestCase extends ArchetypeServiceTest {
         for (int i = 0; i < results.size(); ++i) {
             ObjectSet set = results.get(i);
             assertEquals(tasks[i].getObjectReference(), set.get(ScheduleEvent.ACT_REFERENCE));
-            assertEquals(startTimes[i], set.get(ScheduleEvent.ACT_START_TIME));
-            assertEquals(endTimes[i], set.get(ScheduleEvent.ACT_END_TIME));
+            assertEquals(startTimes[i], getTimestamp(set.getDate(ScheduleEvent.ACT_START_TIME)));
+            assertEquals(endTimes[i], getTimestamp(set.getDate(ScheduleEvent.ACT_END_TIME)));
             assertEquals(tasks[i].getStatus(), set.get(ScheduleEvent.ACT_STATUS));
             assertEquals(tasks[i].getReason(), set.get(ScheduleEvent.ACT_REASON));
             assertEquals(tasks[i].getDescription(), set.get(ScheduleEvent.ACT_DESCRIPTION));

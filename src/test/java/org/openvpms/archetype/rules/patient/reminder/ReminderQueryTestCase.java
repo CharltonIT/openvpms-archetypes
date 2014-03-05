@@ -23,6 +23,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.openvpms.archetype.rules.act.ActStatus;
 import org.openvpms.archetype.rules.patient.PatientArchetypes;
+import org.openvpms.archetype.rules.util.DateRules;
+import org.openvpms.archetype.rules.util.DateUnits;
 import org.openvpms.archetype.test.ArchetypeServiceTest;
 import org.openvpms.archetype.test.TestHelper;
 import org.openvpms.component.business.domain.im.act.Act;
@@ -99,15 +101,13 @@ public class ReminderQueryTestCase extends ArchetypeServiceTest {
         Party customer = TestHelper.createCustomer();
         Party patient = TestHelper.createPatient(customer);
 
-        Calendar calendar = new GregorianCalendar();
-        calendar.set(1980, 0, 1);
-        Date dueFrom = calendar.getTime();
-        calendar.add(Calendar.DAY_OF_YEAR, count);
-        Date dueTo = calendar.getTime();
+        Date dueFrom = TestHelper.getDate("1980-1-1");
+        Date dueTo = dueFrom;
 
         // add some data
         for (int i = 0; i < count; ++i) {
-            ReminderTestHelper.createReminderWithDueDate(patient, reminderType, dueFrom);
+            dueTo = DateRules.getDate(dueFrom, count, DateUnits.DAYS);
+            ReminderTestHelper.createReminderWithDueDate(patient, reminderType, dueTo);
         }
 
         // now determine the no. of acts with a due date in the date range
