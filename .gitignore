@@ -1,4 +1,8 @@
-/target/test-classes
-/target/classes
-/target/maven-archiver
 /target
+/build.properties
+/junit*
+/openvpms.log*
+/.externalToolBuilders
+/*.classpath
+/*.project
+/*.settings
