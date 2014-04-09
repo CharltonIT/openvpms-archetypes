@@ -1,0 +1,8 @@
+/target
+/build.properties
+/junit*
+/openvpms.log*
+/.externalToolBuilders
+/*.classpath
+/*.project
+/*.settings
