@@ -47,7 +47,7 @@
         <site>
             <id>openvpms-site</id>
             <name>OpenVPMS Maven Site</name>
-            <url>scp://dev.openvpms.org:2233/home/admin/public_html/dev.openvpms.org/public/${pom.artifactId}</url>
+            <url>scp://dev.openvpms.org:2233/home/admin/public_html/dev.openvpms.org/public/${project.artifactId}</url>
         </site>
     </distributionManagement>
 
@@ -173,7 +173,7 @@
             <plugin>
                 <groupId>org.openvpms</groupId>
                 <artifactId>openvpms-archetype-maven-plugin</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
                 <configuration>
                     <dir>src/archetypes/org/openvpms/archetype</dir>
                     <propertyfile>target/test-classes/hibernate.properties</propertyfile>
@@ -198,7 +198,7 @@
             <plugin>
                 <groupId>org.openvpms</groupId>
                 <artifactId>openvpms-data-maven-plugin</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
                 <configuration>
                     <dir>src/data/org/openvpms/data/demo</dir>
                     <propertyfile>target/test-classes/hibernate.properties</propertyfile>
@@ -251,7 +251,7 @@
         <dependency>
             <groupId>org.openvpms</groupId>
             <artifactId>openvpms-framework</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
