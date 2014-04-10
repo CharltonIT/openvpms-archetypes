@@ -79,18 +79,9 @@ public class ReminderRules {
      * Reminder due indicator.
      */
     public enum DueState {
-        /**
-         * indicates the reminder is in the future, outside the sensitivity period
-         */
-        NOT_DUE,     
-        /**
-         * indicates the reminder is inside the sensitivity period
-         */
-        DUE,   
-        /**
-         * indicates the reminder is overdue
-         */
-        OVERDUE  
+        NOT_DUE,      // indicates the reminder is in the future, outside the sensitivity period
+        DUE,          // indicates the reminder is inside the sensitivity period
+        OVERDUE       // indicates the reminder is overdue
     }
 
     /**
@@ -441,18 +432,6 @@ public class ReminderRules {
      */
     public Contact getContact(Set<Contact> contacts) {
         return getContact(contacts, true, ContactArchetypes.LOCATION);
-    }
-    /**
-     * Returns the first contact.location with classification 'REMINDER', or; the
-     * preferred contact.location if no contact has this classification,
-     * or; the first contact.location if none is preferred.
-     *
-     * @param contacts the contacts
-     * @return a contact, or {@code null} if none is found
-     * @throws ArchetypeServiceException for any archetype service error
-     */
-    public Contact getLocationContact(Set<Contact> contacts) {
-        return getContact(contacts, false, ContactArchetypes.LOCATION);
     }
 
     /**
