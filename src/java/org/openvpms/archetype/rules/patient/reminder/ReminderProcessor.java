@@ -97,7 +97,6 @@ public class ReminderProcessor
      * @param to             the 'to' date. Nay be {@code null}
      * @param processingDate the processing date
      * @param service        the archetype service
-     * @param patientRules   the patient rules
      */
     public ReminderProcessor(Date from, Date to, Date processingDate, IArchetypeService service,
                              PatientRules patientRules) {
@@ -169,14 +168,13 @@ public class ReminderProcessor
             IMObjectBean templateBean = new IMObjectBean(template, service);
             boolean list = templateBean.getBoolean("list");
             boolean export = templateBean.getBoolean("export");
-            boolean alwaysPrint = templateBean.getBoolean("alwaysprint");
             if (!list && !export && documentTemplate == null) {
                 // no template, so can't process. Strictly speaking this shouldn't happen - a template relationship
                 // should always have a template
                 result = skip(reminder, reminderType, patient);
             } else {
                 Party customer = getCustomer(patient);
-                Contact contact = getContact(customer,alwaysPrint);
+                Contact contact = getContact(customer);
                 if (list) {
                     result = list(reminder, reminderType, patient, customer, contact, documentTemplate);
                 } else if (TypeHelper.isA(contact, ContactArchetypes.LOCATION)) {
@@ -309,7 +307,7 @@ public class ReminderProcessor
     /**
      * Notifies listeners to list a reminder. This is for reminders that
      * have no contact, or a contact that is not one of
-     * <em>contact.location</em>, <em>contact.phoneNumber</em>,
+     * <em>contact.location<em>, <em>contact.phoneNumber</em>,
      * or <em>contact.email</em>
      *
      * @param reminder         the reminder
@@ -451,21 +449,7 @@ public class ReminderProcessor
      * @return the default contact, or {@code null}
      */
     private Contact getContact(Party customer) {
-        return  getContact(customer, false);
+        return (customer != null) ? rules.getContact(customer.getContacts()) : null;
     }
-    /**
-     * Returns the default contact for a customer.
-     *
-     * @param customer the customer. May be {@code null}
-     * @param alwaysPrint  boolean to determines if we need to get a LOCATION v any other.      
-     *                         Defaults to {@code false}
-     * @return the default contact, or {@code null}
-     */
-    private Contact getContact(Party customer, boolean alwaysPrint) {
-        if(customer != null){
-            return (alwaysPrint == true)? rules.getLocationContact(customer.getContacts()) : rules.getContact(customer.getContacts());
-                    }else {
-            return null;
-}
-    }
+
 }
