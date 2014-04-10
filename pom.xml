@@ -99,6 +99,12 @@
                     <include>rules.xml</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>${basedir}/src/data</directory>
+                <includes>
+                    <include>*.xml</include>
+                </includes>
+            </resource>
         </resources>
         <testResources>
             <testResource>
