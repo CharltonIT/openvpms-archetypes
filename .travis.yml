@@ -1,7 +1,14 @@
-## YAML Template.
+﻿## YAML Template.
 ---
 language: java
 before_install:
     - cd ..
     - git clone --branch=$TRAVIS_BRANCH git://github.com/CharltonIT/openvpms.git openvpms
+	- git clone --branch=$TRAVIS_BRANCH git://github.com/CharltonIT/maven-plugins.git maven-plugins
+	- git clone --branch=$TRAVIS_BRANCH git://github.com/CharltonIT/Openvpms-framework.git openvpms-framework
+	- cd openvpms-framework
+	- mvn install -DskipTests=true -B -V
+	- cd ..
+	- cd maven-plugins
+	- mvn install -DskipTests=true -B -V
     - cd $TRAVIS_BUILD_DIR
