@@ -1,5 +1,4 @@
 ## YAML Template.
-
 language: java
 before_install:
     - cd ..
