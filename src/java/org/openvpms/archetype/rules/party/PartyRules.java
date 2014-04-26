@@ -329,10 +329,20 @@ public class PartyRules {
      *         <em>contact.phoneNumber</em> contact
      */
     public String getTelephone(Party party) {
-        Contact contact = getContact(party, ContactArchetypes.PHONE, null, false);
-        return (contact != null) ? formatPhone(contact) : "";
+        return getTelephone(party, false);
     }
-
+    /**
+     * Returns a formatted preferred telephone number for a party.
+     *
+     * @param party the party
+     * @paran withName if {@code True} returns the Name of the telephone number 
+     * @return a formatted telephone number for the party. May be empty if there is no corresponding
+     *         <em>contact.phoneNumber</em> contact
+     */
+    public String getTelephone(Party party, Boolean withName) {
+        Contact contact = getContact(party, ContactArchetypes.PHONE, null, false);
+        return (contact != null) ? formatPhone(contact,withName) : "";
+    }
     /**
      * Returns a formatted preferred telephone number for a party associated with
      * an act via an <em>participation.customer</em> participation.
@@ -651,9 +661,24 @@ public class PartyRules {
      * @return a formatted telephone number
      */
     private String formatPhone(Contact contact) {
+        return formatPhone(contact, false);
+    }
+       /**
+     * Returns a formatted telephone number from a <em>contact.phoneNumber</em>.
+     *
+     * @param contact the contact
+     * @paran withName if {@code true} returns the description of the number 
+     * @return a formatted telephone number
+     */
+    private String formatPhone(Contact contact, Boolean withName) {
         IMObjectBean bean = new IMObjectBean(contact, service);
         String areaCode = bean.getString("areaCode");
         String phone = bean.getString("telephoneNumber", "");
+        if(withName) {
+            String name = bean.getString("name");
+            phone += " (" + name +")";
+        }
+            
         if (StringUtils.isEmpty(areaCode)) {
             return phone;
         } else {

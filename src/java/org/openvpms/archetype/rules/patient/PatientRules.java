@@ -581,7 +581,16 @@ public class PatientRules {
     public String getPetTag(Party patient) {
         return getIdentity(patient, "entityIdentity.petTag");
     }
-
+        /**
+     * Returns the the ID of the Patient.
+     *
+     * @param patient the patient
+     * @return the patient ID
+     */
+    public String getID(Party patient) {
+        return String.valueOf(patient.getId());
+        
+    }
     /**
      * Merges two patients.
      *
