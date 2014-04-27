@@ -9,5 +9,5 @@ before_install:
     - mvn install -DskipTests=true 
     - cd ..
     - cd maven-plugins
-    - mvn install -DskipTests=true -B -fae
+    - mvn install -DskipTests=true -B -X
     - cd $TRAVIS_BUILD_DIR
