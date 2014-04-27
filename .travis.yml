@@ -13,4 +13,6 @@ before_install:
     - git clone --branch=$TRAVIS_BRANCH git://github.com/CharltonIT/openvpms-release.git openvpms-release
     - cd openvpms
     - mvn install -DskipTests=true 
+    - cd openvpms-framework
+    - mysql -u root < openvpms/src/test/resources/createdb.sql
     - cd $TRAVIS_BUILD_DIR
