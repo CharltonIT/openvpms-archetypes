@@ -14,6 +14,5 @@ before_install:
     - cd openvpms
     - mvn install -DskipTests=true
     - cd ..
-    - cd openvpms-framework
     - mysql -u root < openvpms/src/test/resources/createdb.sql
     - cd $TRAVIS_BUILD_DIR
