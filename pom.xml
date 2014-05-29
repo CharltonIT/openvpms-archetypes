@@ -47,7 +47,7 @@
         <site>
             <id>openvpms-site</id>
             <name>OpenVPMS Maven Site</name>
-            <url>scp://dev.openvpms.org:2233/home/admin/public_html/dev.openvpms.org/public/${pom.artifactId}</url>
+            <url>scp://dev.openvpms.org:2233/home/admin/public_html/dev.openvpms.org/public/${project.artifactId}</url>
         </site>
     </distributionManagement>
 
@@ -97,6 +97,12 @@
                 <directory>${basedir}/src/conf/rules</directory>
                 <includes>
                     <include>rules.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/data</directory>
+                <includes>
+                    <include>*.xml</include>
                 </includes>
             </resource>
         </resources>
@@ -257,7 +263,7 @@
         <dependency>
             <groupId>org.openvpms</groupId>
             <artifactId>openvpms-framework</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>

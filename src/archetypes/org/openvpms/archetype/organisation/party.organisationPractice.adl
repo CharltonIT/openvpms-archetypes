@@ -77,6 +77,8 @@
               defaultValue="false()"/>
         <node name="showProblemsInVisit" path="/details/showProblemsInVisit" type="java.lang.Boolean"
               defaultValue="false()"/>
+        <node name="hideCustomerBalanceWindow" path="/details/hideCustomerBalanceWindow" type="java.lang.Boolean" 
+              defaultValue ="false()"/>
         <node name="contacts" path="/contacts"
               type="java.util.HashSet" baseName="Contact" minCardinality="0" maxCardinality="*">
             <assertion name="archetypeRange">
