@@ -422,7 +422,7 @@ public class PartyRulesTestCase extends ArchetypeServiceTest {
     }
 
     /**
-     * Tests the {@link PartyRules#getContact(Party, String, String)} method.
+     * Tests the {@link PartyRules#getContact(Party, String, String)}.
      */
     @Test
     public void testGetContact() {
