@@ -823,21 +823,4 @@ public class PartyRules {
         return result.toString();
     }
 
-    /**
-     * Returns a formatted telephone number from a <em>contact.phoneNumber</em>.
-     *
-     * @param contact the contact
-     * @return a formatted telephone number
-     */
-    private String formatPhone(Contact contact) {
-        IMObjectBean bean = new IMObjectBean(contact, service);
-        String areaCode = bean.getString("areaCode");
-        String phone = bean.getString("telephoneNumber", "");
-        if (StringUtils.isEmpty(areaCode)) {
-            return phone;
-        } else {
-            return "(" + areaCode + ") " + phone;
-        }
-    }
-
 }
