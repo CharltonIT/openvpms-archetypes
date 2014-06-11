@@ -126,6 +126,17 @@
                 <errorMessage>errorMessage</errorMessage>
             </assertion>
         </node>
+        <node name="printsides" path="/details/sides type="java.lang.String"
+            defaultValue="'ONE_SIDED'">
+            <assertion name="lookup.local">
+                <propertyList name="entries">
+                    <property name="ONE_SIDED" value="Single Sided"/>
+                    <property name="TWO_SIDED_LONG_EDGE" value="Duplex(Long Edge)"/>
+                    <property name="TWO_SIDED_SHORT_EDGE" value="Tumbled(Short Edge)"/>
+                </propertyList>
+            <errorMessage>errorMessage</errorMessage>
+            </assertion>
+        </node>
         <node name="copies" path="/details/copies" type="java.lang.Integer" minCardinality="0" defaultValue="1"/>
         <node name="paperHeight" displayName="Paper Height" path="/details/paperHeight" type="java.math.BigDecimal"
               defaultValue="0.0"/>

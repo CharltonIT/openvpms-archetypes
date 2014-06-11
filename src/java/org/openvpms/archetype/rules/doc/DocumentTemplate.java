@@ -29,6 +29,7 @@ import javax.print.attribute.Size2DSyntax;
 import javax.print.attribute.standard.MediaSize;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
+import javax.print.attribute.standard.Sides;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ import java.util.List;
 import static org.openvpms.archetype.rules.doc.DocumentException.ErrorCode.InvalidOrientation;
 import static org.openvpms.archetype.rules.doc.DocumentException.ErrorCode.InvalidPaperSize;
 import static org.openvpms.archetype.rules.doc.DocumentException.ErrorCode.InvalidUnits;
+import static org.openvpms.archetype.rules.doc.DocumentException.ErrorCode.InvalidSides;
 
 
 /**
@@ -80,6 +82,25 @@ public class DocumentTemplate {
      * Landscape print orientation.
      */
     public static final String LANDSCAPE = "LANDSCAPE";
+    
+    /**
+     *Single Sided Printing
+     */
+    public static final String ONE_SIDED = "ONE_SIDED";
+    
+    /**
+     * Duplex Printing
+     */
+    public static final String TWO_SIDED_LONG_EDGE = "TWO_SIDED_LONG_EDGE";
+    
+    public static final String DUPLEX = TWO_SIDED_LONG_EDGE;
+    
+    /**
+     * Tumbled Printing Short Edge printing
+     */
+    public static final String TWO_SIDED_SHORT_EDGE = "TWO_SIDED_SHORT_EDGE";
+    
+    public static final String TUMBLE = "TWO_SIDED_SHORT_EDGE";
 
     /**
      * Millimetres unit for paper size.
@@ -270,7 +291,7 @@ public class DocumentTemplate {
      * @param size the paper size
      */
     public void setPaperSize(String size) {
-        bean.setValue("paperSize", size);
+        bean.setValue("paperSize", size); 
     }
 
     /**
@@ -295,6 +316,21 @@ public class DocumentTemplate {
      */
     public void setOrientation(String orientation) {
         bean.setValue("orientation", orientation);
+    }
+    /**
+     * Get the sides ie Duplex or Single. May be <tt>null</tt>
+     * @return 
+     */
+    public String getPrintSides() {
+        return bean.getString("printsides");
+    }
+    /**
+     * Set the sides to be printed.
+     * @param sides 
+     */
+    
+    public void setPrintSides(String printsides) {
+        bean.setValue("printsides", printsides);
     }
 
     /**
@@ -445,6 +481,10 @@ public class DocumentTemplate {
      */
     public OrientationRequested getOrientationRequested() {
         return getOrientation() != null ? Orientation.getOrientation(getOrientation()) : null;
+    }
+    
+    public Sides getSides() {
+        return getPrintSides() != null ? PrintSides.getSides(getPrintSides()) : null;
     }
 
     /**
@@ -634,6 +674,34 @@ public class DocumentTemplate {
         }
 
         private final int units;
+    }
+    /**
+     * Provides a mapping interface 
+     */
+    private enum PrintSides {
+        
+        ONE_SIDED(Sides.ONE_SIDED),
+        TWO_SIDED_LONG_EDGE(Sides.TWO_SIDED_LONG_EDGE),
+        DUPLEX(Sides.DUPLEX),
+        TUMBLE(Sides.TUMBLE),
+        TWO_SIDED_SHORT_EDGE(Sides.TWO_SIDED_SHORT_EDGE);
+        
+        private PrintSides(Sides sides) {
+            this.sides = sides;
+        }
+         public Sides getSides() {
+            return sides;
+        }
+        public static Sides getSides(String sides) {
+            for (PrintSides s : PrintSides.values()) {
+                if (s.name().equals(sides)) {
+                    return s.getSides(); 
+                }
+            }
+            throw new DocumentException(InvalidSides, sides);
+        }
+        private final Sides sides;
+        
     }
 
 
