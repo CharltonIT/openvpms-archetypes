@@ -84,25 +84,6 @@ public class DocumentTemplate {
     public static final String LANDSCAPE = "LANDSCAPE";
     
     /**
-     *Single Sided Printing
-     */
-    public static final String ONE_SIDED = "ONE_SIDED";
-    
-    /**
-     * Duplex Printing
-     */
-    public static final String TWO_SIDED_LONG_EDGE = "TWO_SIDED_LONG_EDGE";
-    
-    public static final String DUPLEX = TWO_SIDED_LONG_EDGE;
-    
-    /**
-     * Tumbled Printing Short Edge printing
-     */
-    public static final String TWO_SIDED_SHORT_EDGE = "TWO_SIDED_SHORT_EDGE";
-    
-    public static final String TUMBLE = "TWO_SIDED_SHORT_EDGE";
-
-    /**
      * Millimetres unit for paper size.
      */
     public static final String MM = "MM";
@@ -317,21 +298,6 @@ public class DocumentTemplate {
     public void setOrientation(String orientation) {
         bean.setValue("orientation", orientation);
     }
-    /**
-     * Get the sides ie Duplex or Single. May be <tt>null</tt>
-     * @return 
-     */
-    public String getPrintSides() {
-        return bean.getString("printsides");
-    }
-    /**
-     * Set the sides to be printed.
-     * @param sides 
-     */
-    
-    public void setPrintSides(String printsides) {
-        bean.setValue("printsides", printsides);
-    }
 
     /**
      * Returns the default number of copies to print.
@@ -483,10 +449,6 @@ public class DocumentTemplate {
         return getOrientation() != null ? Orientation.getOrientation(getOrientation()) : null;
     }
     
-    public Sides getSides() {
-        return getPrintSides() != null ? PrintSides.getSides(getPrintSides()) : null;
-    }
-
     /**
      * Returns the printers.
      *
