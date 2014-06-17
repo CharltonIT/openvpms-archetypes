@@ -637,34 +637,5 @@ public class DocumentTemplate {
 
         private final int units;
     }
-    /**
-     * Provides a mapping interface 
-     */
-    private enum PrintSides {
-        
-        ONE_SIDED(Sides.ONE_SIDED),
-        TWO_SIDED_LONG_EDGE(Sides.TWO_SIDED_LONG_EDGE),
-        DUPLEX(Sides.DUPLEX),
-        TUMBLE(Sides.TUMBLE),
-        TWO_SIDED_SHORT_EDGE(Sides.TWO_SIDED_SHORT_EDGE);
-        
-        private PrintSides(Sides sides) {
-            this.sides = sides;
-        }
-         public Sides getSides() {
-            return sides;
-        }
-        public static Sides getSides(String sides) {
-            for (PrintSides s : PrintSides.values()) {
-                if (s.name().equals(sides)) {
-                    return s.getSides(); 
-                }
-            }
-            throw new DocumentException(InvalidSides, sides);
-        }
-        private final Sides sides;
-        
+    
     }
-
-
-}
