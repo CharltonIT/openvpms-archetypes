@@ -679,16 +679,21 @@ public class PartyRules {
         IMObjectBean bean = new IMObjectBean(contact, service);
         String areaCode = bean.getString("areaCode");
         String phone = bean.getString("telephoneNumber", "");
+        
         if(withName) {
+        
+          if (!StringUtils.isEmpty(name) && bean.hasNode("name") && !bean.isDefaultValue("name")) {
             String name = bean.getString("name");
             phone += " (" + name +")";
+          }          
+        
         }
-            
         if (StringUtils.isEmpty(areaCode)) {
-            return phone;
+                    
         } else {
-            return "(" + areaCode + ") " + phone;
+            phone = "(" + areaCode + ") " + phone;
         }
+        return phone;
     }
 
     /**
@@ -915,7 +920,6 @@ public class PartyRules {
         protected boolean isPreferred(Contact contact) {
             IMObjectBean bean = new IMObjectBean(contact, service);
             return bean.hasNode("preferred") && bean.getBoolean("preferred");
-        }
     }
 
     /**
