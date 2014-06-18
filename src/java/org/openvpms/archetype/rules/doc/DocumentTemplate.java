@@ -11,7 +11,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * Copyright 2013 (C) OpenVPMS Ltd. All Rights Reserved.
+ * Copyright 2014 (C) OpenVPMS Ltd. All Rights Reserved.
  */
 package org.openvpms.archetype.rules.doc;
 
@@ -80,7 +80,7 @@ public class DocumentTemplate {
      * Landscape print orientation.
      */
     public static final String LANDSCAPE = "LANDSCAPE";
-
+    
     /**
      * Millimetres unit for paper size.
      */
@@ -270,7 +270,7 @@ public class DocumentTemplate {
      * @param size the paper size
      */
     public void setPaperSize(String size) {
-        bean.setValue("paperSize", size);
+        bean.setValue("paperSize", size); 
     }
 
     /**
@@ -446,7 +446,7 @@ public class DocumentTemplate {
     public OrientationRequested getOrientationRequested() {
         return getOrientation() != null ? Orientation.getOrientation(getOrientation()) : null;
     }
-
+    
     /**
      * Returns the printers.
      *
@@ -635,6 +635,5 @@ public class DocumentTemplate {
 
         private final int units;
     }
-
-
-}
+    
+    }
