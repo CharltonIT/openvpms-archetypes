@@ -11,9 +11,8 @@
  *  for the specific language governing rights and limitations under the
  *  License.
  *
- *  Copyright 2010 (C) OpenVPMS Ltd. All Rights Reserved.
+ *  Copyright 2014 (C) OpenVPMS Ltd. All Rights Reserved.
  *
- *  $Id$
  */
 package org.openvpms.archetype.rules.doc;
 
@@ -31,8 +30,7 @@ import static org.openvpms.archetype.rules.doc.DocumentException.ErrorCode.Inval
 /**
  * Wrapper for <em>entityRelationship.documentTemplatePrinter</em>.
  *
- * @author <a href="mailto:support@openvpms.org">OpenVPMS Team</a>
- * @version $LastChangedDate: 2006-05-02 05:16:31Z $
+ * @author Benjamin Charlton
  */
 public class DocumentTemplatePrinter {
 
@@ -110,7 +108,7 @@ public class DocumentTemplatePrinter {
     }
         /**
      * Get the sides ie Duplex or Single. May be <tt>null</tt>
-     * @return 
+     * @return a string representing the Sides.
      */
     public String getPrintSides() {
         return bean.getString("printsides");
@@ -262,7 +260,7 @@ public class DocumentTemplatePrinter {
         private final MediaTray tray;
     }
     /**
-     * Provides a mapping interface 
+     * Provides a mapping interface between Duplex settings and values defined in {@Link Sides} 
      */
     private enum PrintSides {
         

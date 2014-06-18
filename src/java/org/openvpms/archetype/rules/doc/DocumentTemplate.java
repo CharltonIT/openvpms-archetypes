@@ -11,7 +11,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * Copyright 2013 (C) OpenVPMS Ltd. All Rights Reserved.
+ * Copyright 2014 (C) OpenVPMS Ltd. All Rights Reserved.
  */
 package org.openvpms.archetype.rules.doc;
 
@@ -29,7 +29,6 @@ import javax.print.attribute.Size2DSyntax;
 import javax.print.attribute.standard.MediaSize;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
-import javax.print.attribute.standard.Sides;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,6 @@ import java.util.List;
 import static org.openvpms.archetype.rules.doc.DocumentException.ErrorCode.InvalidOrientation;
 import static org.openvpms.archetype.rules.doc.DocumentException.ErrorCode.InvalidPaperSize;
 import static org.openvpms.archetype.rules.doc.DocumentException.ErrorCode.InvalidUnits;
-import static org.openvpms.archetype.rules.doc.DocumentException.ErrorCode.InvalidSides;
 
 
 /**
