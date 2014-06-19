@@ -330,17 +330,18 @@ public class PartyRules {
     public String getTelephone(Party party) {
         return getTelephone(party, false);
     }
+
     /**
      * Returns a formatted preferred telephone number for a party.
      *
-     * @param party the party
-     * @paran withName if {@code True} returns the Name of the telephone number 
+     * @param party    the party
+     * @param withName if {@code true} includes the name, if it is not the default value for the contact
      * @return a formatted telephone number for the party. May be empty if there is no corresponding
      *         <em>contact.phoneNumber</em> contact
      */
-    public String getTelephone(Party party, Boolean withName) {
+    public String getTelephone(Party party, boolean withName) {
         Contact contact = getContact(party, ContactArchetypes.PHONE, null, false);
-        return (contact != null) ? formatPhone(contact,withName) : "";
+        return (contact != null) ? formatPhone(contact, withName) : "";
     }
     /**
      * Returns a formatted preferred telephone number for a party associated with
@@ -370,7 +371,7 @@ public class PartyRules {
     public String getHomeTelephone(Party party) {
         Contact contact = getContact(party, ContactArchetypes.PHONE, "HOME",
                                      false);
-        return (contact != null) ? formatPhone(contact) : "";
+        return (contact != null) ? formatPhone(contact, false) : "";
     }
 
     /**
@@ -402,7 +403,7 @@ public class PartyRules {
     public String getMobileTelephone(Party party) {
         Contact contact = getContact(party, ContactArchetypes.PHONE, "MOBILE",
                                      true);
-        return (contact != null) ? formatPhone(contact) : "";
+        return (contact != null) ? formatPhone(contact, false) : "";
     }
 
     /**
@@ -434,7 +435,7 @@ public class PartyRules {
     public String getWorkTelephone(Party party) {
         Contact contact = getContact(party, ContactArchetypes.PHONE, "WORK",
                                      true);
-        return (contact != null) ? formatPhone(contact) : "";
+        return (contact != null) ? formatPhone(contact, false) : "";
     }
 
     /**
@@ -465,7 +466,7 @@ public class PartyRules {
      */
     public String getSMSTelephone(Party party) {
         Contact contact = (party != null) ? getContact(party, new SMSMatcher(service)) : null;
-        return (contact != null) ? formatPhone(contact) : "";
+        return (contact != null) ? formatPhone(contact, false) : "";
     }
 
     /**
@@ -822,5 +823,15 @@ public class PartyRules {
         result.append(bean.getString("postcode", ""));
         return result.toString();
     }
+
+     * @param contact  the contact
+     * @param withName if {@code true} includes the name, if it is not the default value for the contact
+    private String formatPhone(Contact contact, boolean withName) {
+        if (withName) {
+            String name = contact.getName();
+            if (!StringUtils.isEmpty(name) && bean.hasNode("name") && !bean.isDefaultValue("name")) {
+                phone += " (" + name + ")";
+            }
+        }
 
 }
