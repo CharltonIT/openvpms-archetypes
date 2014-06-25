@@ -19,11 +19,13 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.AndPredicate;
 import org.openvpms.component.business.domain.im.common.Entity;
 import org.openvpms.component.business.domain.im.common.EntityRelationship;
+import org.openvpms.component.business.domain.im.common.IMObject;
 import org.openvpms.component.business.domain.im.document.Document;
 import org.openvpms.component.business.service.archetype.IArchetypeService;
 import org.openvpms.component.business.service.archetype.functor.IsActiveRelationship;
 import org.openvpms.component.business.service.archetype.functor.RefEquals;
 import org.openvpms.component.business.service.archetype.helper.EntityBean;
+import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
 
 import javax.print.attribute.Size2DSyntax;
 import javax.print.attribute.standard.MediaSize;
@@ -80,7 +82,7 @@ public class DocumentTemplate {
      * Landscape print orientation.
      */
     public static final String LANDSCAPE = "LANDSCAPE";
-    
+
     /**
      * Millimetres unit for paper size.
      */
@@ -270,7 +272,7 @@ public class DocumentTemplate {
      * @param size the paper size
      */
     public void setPaperSize(String size) {
-        bean.setValue("paperSize", size); 
+        bean.setValue("paperSize", size);
     }
 
     /**
@@ -446,7 +448,7 @@ public class DocumentTemplate {
     public OrientationRequested getOrientationRequested() {
         return getOrientation() != null ? Orientation.getOrientation(getOrientation()) : null;
     }
-    
+
     /**
      * Returns the printers.
      *
@@ -494,6 +496,20 @@ public class DocumentTemplate {
      */
     public Document getDocument() {
         return new TemplateHelper(service).getDocumentFromTemplate(bean.getEntity());
+    }
+
+    /**
+     * Returns the file name format expression.
+     *
+     * @return the file name format expression. May be {@code null}
+     */
+    public String getFileNameExpression() {
+        List<IMObject> fileNameFormat = bean.getValues("fileNameFormat");
+        if (!fileNameFormat.isEmpty()) {
+            IMObjectBean format = new IMObjectBean(fileNameFormat.get(0));
+            return format.getString("expression");
+        }
+        return null;
     }
 
     /**
@@ -635,5 +651,6 @@ public class DocumentTemplate {
 
         private final int units;
     }
-    
-    }
+
+
+}
