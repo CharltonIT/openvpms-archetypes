@@ -823,15 +823,4 @@ public class PartyRules {
         result.append(bean.getString("postcode", ""));
         return result.toString();
     }
-
-     * @param contact  the contact
-     * @param withName if {@code true} includes the name, if it is not the default value for the contact
-    private String formatPhone(Contact contact, boolean withName) {
-        if (withName) {
-            String name = contact.getName();
-            if (!StringUtils.isEmpty(name) && bean.hasNode("name") && !bean.isDefaultValue("name")) {
-                phone += " (" + name + ")";
-            }
-        }
-
 }
