@@ -244,7 +244,7 @@ public class PatientRules {
      * @return the referral vet, or {@code null} if none is founds
      * @throws ArchetypeServiceException for any archetype service error
      */
-    public Party gerReferralVet(Party patient) {
+    public Party getReferralVet(Party patient) {
         return  getReferralVet(patient, new Date());
     }
     /**
