@@ -11,9 +11,8 @@
  *  for the specific language governing rights and limitations under the
  *  License.
  *
- *  Copyright 2010 (C) OpenVPMS Ltd. All Rights Reserved.
+ *  Copyright 2014 (C) OpenVPMS Ltd. All Rights Reserved.
  *
- *  $Id$
  */
 package org.openvpms.archetype.rules.doc;
 
@@ -24,13 +23,14 @@ import org.openvpms.component.business.service.archetype.IArchetypeService;
 import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
 
 import javax.print.attribute.standard.MediaTray;
+import javax.print.attribute.standard.Sides;
+import static org.openvpms.archetype.rules.doc.DocumentException.ErrorCode.InvalidSides;
 
 
 /**
  * Wrapper for <em>entityRelationship.documentTemplatePrinter</em>.
  *
- * @author <a href="mailto:support@openvpms.org">OpenVPMS Team</a>
- * @version $LastChangedDate: 2006-05-02 05:16:31Z $
+ * @author Benjamin Charlton
  */
 public class DocumentTemplatePrinter {
 
@@ -106,6 +106,20 @@ public class DocumentTemplatePrinter {
     public boolean getInteractive() {
         return bean.getBoolean("interactive");
     }
+        /**
+     * Get the sides ie Duplex or Single. May be <tt>null</tt>
+     * @return a string representing the Sides.
+     */
+    public String getPrintSides() {
+        return bean.getString("printsides");
+    }    
+    /**
+     * Set the sides to be printed.
+     * @param printsides
+     */
+    public void setPrintSides(String printsides) {
+        bean.setValue("printsides", printsides);
+    }
 
     /**
      * Determines if the template should be printed interactively.
@@ -125,6 +139,13 @@ public class DocumentTemplatePrinter {
     public MediaTray getMediaTray() {
         String tray = getPaperTray();
         return (tray != null) ? Tray.getTray(tray) : null;
+    }
+    /** 
+     * Returns the duplex setting
+     * @return the Sides to print or <tt>null</tt> if none is defined
+     */
+    public Sides getSides() {
+        return getPrintSides() != null ? PrintSides.getSides(getPrintSides()) : null;
     }
 
     /**
@@ -238,5 +259,32 @@ public class DocumentTemplatePrinter {
 
         private final MediaTray tray;
     }
-
+    /**
+     * Provides a mapping interface between Duplex settings and values defined in {@Link Sides} 
+     */
+    private enum PrintSides {
+        
+        ONE_SIDED(Sides.ONE_SIDED),
+        TWO_SIDED_LONG_EDGE(Sides.TWO_SIDED_LONG_EDGE),
+        DUPLEX(Sides.DUPLEX),
+        TUMBLE(Sides.TUMBLE),
+        TWO_SIDED_SHORT_EDGE(Sides.TWO_SIDED_SHORT_EDGE);
+        
+        private PrintSides(Sides sides) {
+            this.sides = sides;
+        }
+         public Sides getSides() {
+            return sides;
+        }
+        public static Sides getSides(String sides) {
+            for (PrintSides s : PrintSides.values()) {
+                if (s.name().equals(sides)) {
+                    return s.getSides(); 
+                }
+            }
+            throw new DocumentException(InvalidSides, sides);
+        }
+        private final Sides sides;
+        
+    }
 }
