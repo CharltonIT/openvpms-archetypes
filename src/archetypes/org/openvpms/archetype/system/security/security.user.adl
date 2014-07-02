@@ -41,7 +41,6 @@
         <node name="description" path="/description" type="java.lang.String" displayName="Description"/>
         <node name="colour" path="/details/colour" type="java.lang.String" maxLength="10"/>
         <node name="active" path="/active" type="java.lang.Boolean" defaultValue="true()"/>
-        <node name="showCustomerBalanceWindow" path="/details/showCustomerBalanceWindow" type="java.lang.Boolean" defaultValue ="true()"/>
         <node dislayName="User Level" name="userLevel" path="/details/userLevel" type="java.lang.String"
               minCardinality="0">
             <assertion name="lookup.local">
