@@ -1,18 +1,17 @@
 /*
- *  Version: 1.0
+ * Version: 1.0
  *
- *  The contents of this file are subject to the OpenVPMS License Version
- *  1.0 (the 'License'); you may not use this file except in compliance with
- *  the License. You may obtain a copy of the License at
- *  http://www.openvpms.org/license/
+ * The contents of this file are subject to the OpenVPMS License Version
+ * 1.0 (the 'License'); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.openvpms.org/license/
  *
- *  Software distributed under the License is distributed on an 'AS IS' basis,
- *  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- *  for the specific language governing rights and limitations under the
- *  License.
+ * Software distributed under the License is distributed on an 'AS IS' basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
  *
- *  Copyright 2014 (C) OpenVPMS Ltd. All Rights Reserved.
- *
+ * Copyright 2014 (C) OpenVPMS Ltd. All Rights Reserved.
  */
 package org.openvpms.archetype.rules.doc;
 
@@ -24,13 +23,15 @@ import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
 
 import javax.print.attribute.standard.MediaTray;
 import javax.print.attribute.standard.Sides;
+
 import static org.openvpms.archetype.rules.doc.DocumentException.ErrorCode.InvalidSides;
 
 
 /**
  * Wrapper for <em>entityRelationship.documentTemplatePrinter</em>.
  *
- * @author Benjamin Charlton
+ * @author Tim Anderson
+ * @author Ben Charlton
  */
 public class DocumentTemplatePrinter {
 
@@ -106,19 +107,30 @@ public class DocumentTemplatePrinter {
     public boolean getInteractive() {
         return bean.getBoolean("interactive");
     }
-        /**
-     * Get the sides ie Duplex or Single. May be <tt>null</tt>
-     * @return a string representing the Sides.
+
+    /**
+     * Sets the sides to print on.
+     * <p/>
+     * Legal values are:
+     * <ul>
+     * <li>ONE_SIDED</li>
+     * <li>TWO_SIDED_LONG_EDGE</li>
+     * <li>TWO_SIDED_SHORT_EDGE</li>
+     * </ul>
+     *
+     * @return the sides to print on. May be {@code null}
      */
     public String getPrintSides() {
-        return bean.getString("printsides");
-    }    
+        return bean.getString("sides");
+    }
+
     /**
      * Set the sides to be printed.
-     * @param printsides
+     *
+     * @param sides the sides to print on. May be {@code null}
      */
-    public void setPrintSides(String printsides) {
-        bean.setValue("printsides", printsides);
+    public void setPrintSides(String sides) {
+        bean.setValue("sides", sides);
     }
 
     /**
@@ -140,12 +152,15 @@ public class DocumentTemplatePrinter {
         String tray = getPaperTray();
         return (tray != null) ? Tray.getTray(tray) : null;
     }
-    /** 
-     * Returns the duplex setting
-     * @return the Sides to print or <tt>null</tt> if none is defined
+
+    /**
+     * Determines if pages are printed single side or double sided.
+     *
+     * @return the sides, or {@code null} if none is defined
      */
     public Sides getSides() {
-        return getPrintSides() != null ? PrintSides.getSides(getPrintSides()) : null;
+        String sides = getPrintSides();
+        return sides != null ? PrintSides.getSides(sides) : null;
     }
 
     /**
@@ -227,7 +242,7 @@ public class DocumentTemplatePrinter {
     }
 
     /**
-     * Provides a mapping between supported media trays and values defined in @{link MediaTray}.
+     * Provides a mapping between supported media trays and values defined in {@link MediaTray}.
      */
     private enum Tray {
 
@@ -259,32 +274,34 @@ public class DocumentTemplatePrinter {
 
         private final MediaTray tray;
     }
+
     /**
-     * Provides a mapping interface between Duplex settings and values defined in {@Link Sides} 
+     * Provides a mapping between print sides and values defined in {@link Sides}.
      */
     private enum PrintSides {
-        
+
         ONE_SIDED(Sides.ONE_SIDED),
         TWO_SIDED_LONG_EDGE(Sides.TWO_SIDED_LONG_EDGE),
-        DUPLEX(Sides.DUPLEX),
-        TUMBLE(Sides.TUMBLE),
         TWO_SIDED_SHORT_EDGE(Sides.TWO_SIDED_SHORT_EDGE);
-        
+
         private PrintSides(Sides sides) {
             this.sides = sides;
         }
-         public Sides getSides() {
+
+        public Sides getSides() {
             return sides;
         }
+
         public static Sides getSides(String sides) {
             for (PrintSides s : PrintSides.values()) {
                 if (s.name().equals(sides)) {
-                    return s.getSides(); 
+                    return s.getSides();
                 }
             }
             throw new DocumentException(InvalidSides, sides);
         }
+
         private final Sides sides;
-        
+
     }
 }
