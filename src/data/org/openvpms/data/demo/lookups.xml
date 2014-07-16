@@ -47,6 +47,7 @@
     <data id="UPWEY_3158" archetype="lookup.suburb" code="UPWEY_3158" name="Upwey" postCode="3158"/>
     <data id="VIEWBANK_3084" archetype="lookup.suburb" code="VIEWBANK_3084" name="Viewbank" postCode="3084"/>
     <data id="WHITTLESEA_3757" archetype="lookup.suburb" code="WHITTLESEA_3757" name="Whittlesea" postCode="3757"/>
+    <data id="NORTH_RYDE_2113" archetype="lookup.suburb" code="NORTH_RYDE_2113" name="North Ryde" postCode="2113"/>
     <data archetype="lookupRelationship.stateSuburb" source="id:VIC" target="id:UPWEY_3158"/>
     <data archetype="lookupRelationship.stateSuburb" source="id:SA" target="id:BLACK_ROCK_5431"/>
     <data archetype="lookupRelationship.stateSuburb" source="id:VIC" target="id:CROYDON_3136"/>
@@ -61,14 +62,15 @@
     <data archetype="lookupRelationship.stateSuburb" source="id:VIC" target="id:UPWEY_3158"/>
     <data archetype="lookupRelationship.stateSuburb" source="id:VIC" target="id:VIEWBANK_3084"/>
     <data archetype="lookupRelationship.stateSuburb" source="id:VIC" target="id:WHITTLESEA_3757"/>
+    <data archetype="lookupRelationship.stateSuburb" source="id:NSW" target="id:NORTH_RYDE_2113"/>
     <data archetype="lookup.currency" code="AUD" name="Australian Dollar" defaultLookup="true" roundingMode="HALF_UP"
           minDenomination="0.05"/>
     <data archetype="lookup.currency" code="NZD" name="New Zealand Dollar" roundingMode="HALF_UP"
           minDenomination="0.10"/>
-    <data archetype="lookup.appointmentReason" code="CHECKUP" defaultLookup="true"/>
-    <data archetype="lookup.appointmentReason" code="VACCINATION"/>
-    <data archetype="lookup.appointmentReason" code="SURGERY"/>
-    <data archetype="lookup.appointmentReason" code="OTHER"/>
+    <data archetype="lookup.visitReason" code="CHECKUP" defaultLookup="true"/>
+    <data archetype="lookup.visitReason" code="VACCINATION"/>
+    <data archetype="lookup.visitReason" code="SURGERY"/>
+    <data archetype="lookup.visitReason" code="OTHER"/>
     <data archetype="lookup.messageReason" code="PHONE" name="Phone Call" defaultLookup="true"/>
     <data archetype="lookup.messageReason" code="OTHER" name="Other"/>
     <data archetype="lookup.uom" code="UNIT" unitCode="EA" defaultLookup="true"/>
@@ -93,8 +95,8 @@
     <data archetype="lookup.contactPurpose" code="MOBILE"/>
     <data archetype="lookup.contactPurpose" code="POSTAL"/>
     <data archetype="lookup.contactPurpose" code="CORRESPONDENCE"/>
-    <data archetype="lookup.contactPurpose" code="REMINDER"/>
-    <data archetype="lookup.contactPurpose" code="BILLING"/>
+    <data id="REMINDER" archetype="lookup.contactPurpose" code="REMINDER"/>
+    <data id="BILLING" archetype="lookup.contactPurpose" code="BILLING"/>
     <data archetype="lookup.customerType" code="SMALL_ANIMAL"/>
     <data archetype="lookup.customerType" code="LARGE_ANIMAL"/>
     <data archetype="lookup.customerType" code="STUD"/>
@@ -149,6 +151,9 @@
     <data archetype="lookup.reportType" code="FINANCIAL"/>
     <data archetype="lookup.reportType" code="OTHER" defaultLookup="true"/>
 
+    <data archetype="lookup.pricingGroup" code="MAIN" name="Main Pricing Group"/>
+    <data archetype="lookup.pricingGroup" code="BRANCH" name="Branch Pricing Group"/>
+
     <data archetype="lookup.fileNameFormat" code="DOC_NAME_DOC_DATE"
           name="Document name - document date"
           description="Valid for customer, patient, and supplier documents only"
@@ -162,16 +167,24 @@
           description="Valid for patient documents only"
           expression="concat($file, ' - ', $patient.name, ' ', $customer.lastName, ' - ', date:format(openvpms:get(.,'startTime'), 'd MMM yyyy'))"/>
     <data archetype="lookup.fileNameFormat" code="DOC_NAME_PATIENT_FULL_NAME_TODAYS_DATE"
-          name="Document name - Patient full name - today's date"
+          name="Document name - patient full name - today's date"
           description="Valid for patient documents only"
           expression="concat($file, ' - ', $patient.name, ' ', $customer.lastName, ' - ', date:format(java.util.Date.new(), 'd MMM yyyy'))"/>
     <data archetype="lookup.fileNameFormat" code="DOC_NAME_CUSTOMER_FULL_NAME_DOC_DATE"
           name="Document name - customer full name - document date"
           description="Valid for customer documents only"
-          expression="concat($file, ' - ', party:getFullName($customer), ' - ', date:format(openvpms:get(.,'startTime'), 'd MMM yyyy'))"/>
+          expression="concat($file, ' - ', party:getPartyFullName($customer), ' - ', date:format(openvpms:get(.,'startTime'), 'd MMM yyyy'))"/>
     <data archetype="lookup.fileNameFormat" code="DOC_NAME_CUSTOMER_FULL_NAME_TODAYS_DATE"
           name="Document name - customer full name - today's date"
           description="Valid for customer documents only"
-          expression="concat($file, ' - ', party:getFullName($customer), ' - ', date:format(java.util.Date.new(), 'd MMM yyyy'))"/>
+          expression="concat($file, ' - ', party:getPartyFullName($customer), ' - ', date:format(java.util.Date.new(), 'd MMM yyyy'))"/>
+    <data archetype="lookup.fileNameFormat" code="DOC_NAME_SUPPLIER_FULL_NAME_DOC_DATE"
+          name="Document name - supplier full name - document date"
+          description="Valid for supplier documents only"
+          expression="concat($file, ' - ', party:getPartyFullName($supplier), ' - ', date:format(openvpms:get(.,'startTime'), 'd MMM yyyy'))"/>
+    <data archetype="lookup.fileNameFormat" code="DOC_NAME_SUPPLIER_FULL_NAME_TODAYS_DATE"
+          name="Document name - supplier full name - today's date"
+          description="Valid for supplier documents only"
+          expression="concat($file, ' - ', party:getPartyFullName($supplier), ' - ', date:format(java.util.Date.new(), 'd MMM yyyy'))"/>
 
 </archetype>
