@@ -340,6 +340,7 @@ public class PartyRules {
      * Returns a formatted preferred telephone number for a party.
      *
      * @param party the party
+     * @param withName boolean if true returns a description inline
      * @paran withName if {@code True} returns the Name of the telephone number 
      * @return a formatted telephone number for the party. May be empty if there is no corresponding
      *         <em>contact.phoneNumber</em> contact
@@ -681,9 +682,9 @@ public class PartyRules {
         String phone = bean.getString("telephoneNumber", "");
         
         if(withName) {
-        
+          String name = bean.getString("name");
           if (!StringUtils.isEmpty(name) && bean.hasNode("name") && !bean.isDefaultValue("name")) {
-            String name = bean.getString("name");
+            
             phone += " (" + name +")";
           }          
         
@@ -921,7 +922,7 @@ public class PartyRules {
             IMObjectBean bean = new IMObjectBean(contact, service);
             return bean.hasNode("preferred") && bean.getBoolean("preferred");
     }
-
+    }
     /**
      * Matches contacts on purpose.
      */
