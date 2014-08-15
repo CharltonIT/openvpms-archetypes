@@ -11,11 +11,12 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * Copyright 2013 (C) OpenVPMS Ltd. All Rights Reserved.
+ * Copyright 2014 (C) OpenVPMS Ltd. All Rights Reserved.
  */
 
 package org.openvpms.archetype.rules.patient.reminder;
 
+import org.apache.commons.lang.StringUtils;
 import org.openvpms.archetype.component.processor.AbstractActionProcessor;
 import org.openvpms.archetype.rules.party.ContactArchetypes;
 import org.openvpms.archetype.rules.patient.PatientRules;
@@ -64,6 +65,11 @@ public class ReminderProcessor
     private final Date to;
 
     /**
+     * If {@code true}, ignore any reminder templates with {@code sms = true}
+     */
+    private final boolean disableSMS;
+
+    /**
      * The archetype service.
      */
     private final IArchetypeService service;
@@ -96,14 +102,16 @@ public class ReminderProcessor
      * @param from           the 'from' date. May be {@code null}
      * @param to             the 'to' date. Nay be {@code null}
      * @param processingDate the processing date
+     * @param disableSMS     if {@code true}, ignore any reminder templates with {@code sms = true}
      * @param service        the archetype service
      * @param patientRules   the patient rules
      */
-    public ReminderProcessor(Date from, Date to, Date processingDate, IArchetypeService service,
+    public ReminderProcessor(Date from, Date to, Date processingDate, boolean disableSMS, IArchetypeService service,
                              PatientRules patientRules) {
         this.from = from;
         this.to = to;
         this.processingDate = processingDate;
+        this.disableSMS = disableSMS;
         this.service = service;
         this.patientRules = patientRules;
         rules = new ReminderRules(service, new ReminderTypeCache(), patientRules);
@@ -170,13 +178,15 @@ public class ReminderProcessor
             boolean list = templateBean.getBoolean("list");
             boolean export = templateBean.getBoolean("export");
             boolean alwaysPrint = templateBean.getBoolean("alwaysprint");
+            boolean canSMSTemplate = !disableSMS && canSMSTemplate(documentTemplate);
+            boolean sms = templateBean.getBoolean("sms") && canSMSTemplate;
             if (!list && !export && documentTemplate == null) {
                 // no template, so can't process. Strictly speaking this shouldn't happen - a template relationship
                 // should always have a template
                 result = skip(reminder, reminderType, patient);
             } else {
                 Party customer = getCustomer(patient);
-                Contact contact = getContact(customer,alwaysPrint);
+                Contact contact = getContact(customer, sms , alwaysPrint);
                 if (list) {
                     result = list(reminder, reminderType, patient, customer, contact, documentTemplate);
                 } else if (TypeHelper.isA(contact, ContactArchetypes.LOCATION)) {
@@ -186,7 +196,11 @@ public class ReminderProcessor
                         result = print(reminder, reminderType, patient, customer, contact, documentTemplate);
                     }
                 } else if (TypeHelper.isA(contact, ContactArchetypes.PHONE)) {
-                    result = phone(reminder, reminderType, patient, customer, contact, documentTemplate);
+                    if (canSMSTemplate && canSMS(contact)) {
+                        result = sms(reminder, reminderType, patient, customer, contact, documentTemplate);
+                    } else {
+                        result = phone(reminder, reminderType, patient, customer, contact, documentTemplate);
+                    }
                 } else if (TypeHelper.isA(contact, ContactArchetypes.EMAIL)) {
                     result = email(reminder, reminderType, patient, customer, contact, documentTemplate);
                 } else {
@@ -265,6 +279,27 @@ public class ReminderProcessor
     }
 
     /**
+     * Notifies listeners to SMS a reminder.
+     *
+     * @param reminder         the reminder
+     * @param reminderType     the reminder type
+     * @param patient          the patient
+     * @param customer         the customer
+     * @param contact          the reminder contact
+     * @param documentTemplate the document template. May be {@code null}
+     * @return the reminder event
+     * @throws ArchetypeServiceException  for any archetype service error
+     * @throws ReminderProcessorException if the reminder cannot be processed
+     */
+    protected ReminderEvent sms(Act reminder, ReminderType reminderType, Party patient, Party customer,
+                                Contact contact, Entity documentTemplate) {
+        ReminderEvent event = new ReminderEvent(Action.SMS, reminder, reminderType, patient, customer, contact,
+                                                documentTemplate);
+        notifyListeners(event.getAction(), event);
+        return event;
+    }
+
+    /**
      * Notifies listeners to phone a reminder.
      *
      * @param reminder         the reminder
@@ -307,10 +342,8 @@ public class ReminderProcessor
     }
 
     /**
-     * Notifies listeners to list a reminder. This is for reminders that
-     * have no contact, or a contact that is not one of
-     * <em>contact.location</em>, <em>contact.phoneNumber</em>,
-     * or <em>contact.email</em>
+     * Notifies listeners to list a reminder. This is for reminders that have no contact, or a contact that is not one
+     * of <em>contact.location<em>, <em>contact.phoneNumber</em>, or <em>contact.email</em>.
      *
      * @param reminder         the reminder
      * @param reminderType     the reminder type
@@ -447,21 +480,56 @@ public class ReminderProcessor
      * @return the default contact, or {@code null}
      */
     private Contact getContact(Party customer) {
-        return  getContact(customer, false);
+        return getContact(customer, false, false);
     }
+
     /**
-     * Returns the default contact for a customer.
+     * Returns the contact for a customer.
      *
      * @param customer the customer. May be {@code null}
-     * @param alwaysPrint  boolean to determines if we need to get a LOCATION v any other.      
-     *                         Defaults to {@code false}
-     * @return the default contact, or {@code null}
+     * @param sms      if {@code true}, return an SMS contact, if one is present
+     * @return the contact, or {@code null}
      */
-    private Contact getContact(Party customer, boolean alwaysPrint) {
-        if(customer != null){
-            return (alwaysPrint == true)? rules.getLocationContact(customer.getContacts()) : rules.getContact(customer.getContacts());
-                    }else {
-            return null;
-}
+    private Contact getContact(Party customer, boolean sms, boolean alwaysPrint) {
+        Contact result = null;
+        if (customer != null) {
+			if (!alwaysPrint) {
+            if (sms) {
+                result = rules.getSMSContact(customer.getContacts());
+                if (result == null) {
+                    result = rules.getContact(customer.getContacts());
+                }
+            } else {
+                result = rules.getContact(customer.getContacts());
+            }}else{
+				result = rules.getLocationContact(customer.getContacts());
+				}
+        }
+        return result;
+    }
+
+    /**
+     * Determines if a document template has SMS text.
+     *
+     * @param documentTemplate the document template. May be {@code null}
+     * @return {@code true} if the template has SMS text
+     */
+    private boolean canSMSTemplate(Entity documentTemplate) {
+        if (documentTemplate != null) {
+            IMObjectBean bean = new IMObjectBean(documentTemplate, service);
+            return !StringUtils.isEmpty(bean.getString("sms"));
+        }
+        return false;
+    }
+
+    /**
+     * Determines if a reminder can be sent via SMS.
+     *
+     * @param contact the phone contact
+     * @return {@code true} if an SMS can be sent
+     */
+    private boolean canSMS(Contact contact) {
+        IMObjectBean bean = new IMObjectBean(contact, service);
+        return bean.getBoolean("sms");
     }
 }
