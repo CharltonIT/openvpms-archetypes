@@ -448,7 +448,7 @@ public class DiscountRulesTestCase extends ArchetypeServiceTest {
         BigDecimal quantity = BigDecimal.ONE;
 
         BigDecimal discount = rules.calculateDiscount(
-                date, customer, patient, product, fixedPrice, unitPrice,
+                date, null, customer, patient, product, fixedPrice, unitPrice,
                 quantity, maxFixedDiscount, maxUnitDiscount);
         checkEquals(expectedDiscount, discount);
     }

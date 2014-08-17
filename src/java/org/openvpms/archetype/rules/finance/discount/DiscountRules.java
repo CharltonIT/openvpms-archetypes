@@ -17,6 +17,7 @@
 package org.openvpms.archetype.rules.finance.discount;
 
 import org.openvpms.archetype.rules.math.MathRules;
+import org.openvpms.archetype.rules.finance.tax.TaxRules;
 import org.openvpms.component.business.domain.im.common.Entity;
 import org.openvpms.component.business.domain.im.common.EntityRelationship;
 import org.openvpms.component.business.domain.im.common.IMObjectReference;
@@ -72,6 +73,10 @@ public class DiscountRules {
      * Percentage discount type.
      */
     private static final String PERCENTAGE = "PERCENTAGE";
+    
+    private static final String BASE_COST = "BASE_COST";
+    
+    private TaxRules taxRules;
 
     /**
      * Constructs a new <tt>DiscountRules</tt>.
@@ -87,6 +92,7 @@ public class DiscountRules {
      */
     public DiscountRules(IArchetypeService service) {
         this.service = service;
+        this.taxRules = null;
     }
 
     /**
@@ -118,6 +124,7 @@ public class DiscountRules {
      *
      * @param date                  the date, used to determine if a discount
      *                              applies
+     * @param practice              the practice
      * @param customer              the customer
      * @param patient               the patient. May be <tt>null</tt>
      * @param product               the product
@@ -129,14 +136,79 @@ public class DiscountRules {
      * @return the discount amount
      * @throws ArchetypeServiceException for any archetype service error
      */
-    public BigDecimal calculateDiscount(Date date, Party customer,
-                                        Party patient, Product product,
+    public BigDecimal calculateDiscount(Date date, Party practice,
+                                        Party customer, Party patient,
+                                        Product product,
                                         BigDecimal fixedPrice,
                                         BigDecimal unitPrice,
                                         BigDecimal quantity,
                                         BigDecimal maxFixedPriceDiscount,
-                                        BigDecimal maxUnitPriceDiscount) {
+                                        BigDecimal maxUnitPriceDiscount
+                                        ) {
+        
+        return calculateDiscount(date, practice, customer, patient, product, fixedPrice, unitPrice, quantity,maxFixedPriceDiscount, maxUnitPriceDiscount, null, null);
+    }
+    /**
+     * Calculates the discount amount for a customer, patient and product.
+     * The discount rates are determined by:
+     * <ol>
+     * <li>finding all the discountType entities for the product and
+     * product's productType</li>
+     * <li>finding all the discountType entities for the customer and
+     * patient</li>
+     * <li>removing any discountType entities that are not active for the
+     * specified date; and </li>
+     * <li>removing any discountType entities from the combined
+     * product/productType entities that are not also in the combined
+     * customer/patient entities</li>
+     * </ol>
+     * The rates associated with the remaining discountTypes are used to
+     * calculate the discount amount. The discount amount is the sum of:
+     * <p/>
+     * <tt>(fixedPrice * discountRate/100) + qty * (unitPrice * discountRate/100)</tt>
+     * </p>
+     * <br/>
+     * for each rate. If the discount amount exceeds the maximum discount
+     * calculated by:
+     * <p/>
+     * <tt>(fixedPrice * maxFixedPriceDiscount/100) + qty * (unitPrice * maxUnitPriceDiscount/100)</tt>
+     * <p/>
+     * then the maximum discount amount will be returned.
+     *
+     * @param date                  the date, used to determine if a discount
+     *                              applies
+     * @param practice              the practice. May be <tt>null</tt>
+     * @param customer              the customer
+     * @param patient               the patient. May be <tt>null</tt>
+     * @param product               the product
+     * @param fixedPrice            the fixed amount
+     * @param unitPrice             the unit price
+     * @param quantity              the quantity
+     * @param maxFixedPriceDiscount the maximum fixed price discount percentage
+     * @param maxUnitPriceDiscount  the maximum unit price discount percentage
+     * @param unitCostPrice         the cost price.  May be <tt>null</tt>
+     * @param fixedCostPrice
+     * @return the discount amount
+     * @throws ArchetypeServiceException for any archetype service error
+     */
+    public BigDecimal calculateDiscount(Date date, Party practice, 
+                                        Party customer,
+                                        Party patient,
+                                        Product product,
+                                        BigDecimal fixedPrice,
+                                        BigDecimal unitPrice,
+                                        BigDecimal quantity,
+                                        BigDecimal maxFixedPriceDiscount,
+                                        BigDecimal maxUnitPriceDiscount,
+                                        BigDecimal unitCostPrice ,
+                                        BigDecimal fixedCostPrice) {
         BigDecimal discount;
+        BigDecimal taxRate =  BigDecimal.ZERO;
+        if (practice != null) {
+                    this.taxRules = new TaxRules(practice);
+                    taxRate = taxRules.getTaxRate(product);
+            }
+        
         if (fixedPrice.compareTo(BigDecimal.ZERO) == 0
             && (unitPrice.compareTo(BigDecimal.ZERO) == 0 || quantity.compareTo(BigDecimal.ZERO) == 0)) {
             discount = BigDecimal.ZERO;
@@ -145,9 +217,8 @@ public class DiscountRules {
             if (discounts.isEmpty()) {
                 discount = BigDecimal.ZERO;
             } else {
-                discount = calculateDiscountAmount(fixedPrice, unitPrice, quantity, discounts);
-                BigDecimal maxDiscount = calculateMaxDiscount(fixedPrice, unitPrice, quantity, maxFixedPriceDiscount,
-                                                              maxUnitPriceDiscount);
+                discount = calculateDiscountAmount(fixedPrice, unitPrice, fixedCostPrice, unitCostPrice, quantity, taxRate, discounts);
+                BigDecimal maxDiscount = calculateMaxDiscount(fixedPrice, unitPrice, quantity, maxFixedPriceDiscount, maxUnitPriceDiscount);
                 if (discount.compareTo(maxDiscount) > 0) {
                     discount = maxDiscount;
                 }
@@ -194,7 +265,6 @@ public class DiscountRules {
         }
         return result;
     }
-
     /**
      * Calculates the discount amount for an act, given a list of discount
      * classifications.
@@ -202,16 +272,53 @@ public class DiscountRules {
      * <tt>(fixedPrice * discountRate/100) + qty * (unitPrice * discountRate/100)</tt>
      * for each rate.
      *
-     * @param fixedPrice the fixed price
-     * @param unitPrice  the unit price
-     * @param quantity   the quantity
-     * @param discounts  a set of <em>entity.discountType</em>s
+     * @param fixedPrice    the fixed price
+     * @param unitPrice     the unit price
+     * @param costPRice     the cost price
+     * @param quantity      the quantity
+     * @param discounts     a set of <em>entity.discountType</em>s
      * @return the discount amount for the act
      */
-    private BigDecimal calculateDiscountAmount(BigDecimal fixedPrice, BigDecimal unitPrice, BigDecimal quantity,
-                                               List<Entity> discounts) {
+    private BigDecimal calculateDiscountAmount(BigDecimal fixedPrice, BigDecimal unitPrice, BigDecimal fixedCostPrice, BigDecimal unitcostPrice, BigDecimal quantity, BigDecimal taxRate, List<Entity> discounts) {
         BigDecimal result = BigDecimal.ZERO;
-
+        BigDecimal lcostrate = new BigDecimal("1000");
+        Boolean costRate = false;
+        Entity lCostDiscount = null;
+        for(Entity discount : discounts){
+            IMObjectBean discountBean = new IMObjectBean(discount, service);
+            String discountType = discountBean.getString("type");
+            if(BASE_COST.equals(discountType)) {
+                
+                costRate = true;
+                BigDecimal rate = discountBean.getBigDecimal("rate", BigDecimal.ZERO);
+                if(rate.compareTo(lcostrate) < 0) {
+                    lcostrate = rate;
+                    lCostDiscount = discount;
+                    discounts.remove(discount); 
+                }
+            }
+            
+        }
+        if (costRate) {
+            IMObjectBean discountBean = new IMObjectBean(lCostDiscount, service);
+            BigDecimal rate = discountBean.getBigDecimal("rate", BigDecimal.ZERO);
+            Boolean discountFixed = discountBean.getBoolean("discountFixed");
+            BigDecimal dFixedPrice;
+            if (discountFixed) {
+                BigDecimal fixedQty = new BigDecimal(quantity.compareTo(BigDecimal.ZERO)).abs();
+                dFixedPrice = fixedQty.multiply(calcDiscount(fixedCostPrice, fixedPrice, rate, taxRate, BASE_COST));
+            } else {
+                dFixedPrice = BigDecimal.ZERO;
+            }
+            BigDecimal dUnitPrice = calcDiscount(unitcostPrice, unitPrice, rate, taxRate, BASE_COST);
+            BigDecimal amount;
+            if (quantity.compareTo(BigDecimal.ZERO) == 0){
+                    amount = BigDecimal.ZERO;
+                } else {
+                amount = quantity.abs().multiply(dUnitPrice).add(dFixedPrice);
+                }
+            result = result.add(amount);
+        }
         for (Entity discount : discounts) {
             IMObjectBean discountBean = new IMObjectBean(discount, service);
             String discountType = discountBean.getString("type");
@@ -219,14 +326,18 @@ public class DiscountRules {
             Boolean discountFixed = discountBean.getBoolean("discountFixed");
             BigDecimal dFixedPrice;
             if (discountFixed) {
-                dFixedPrice = calcDiscount(fixedPrice, rate, discountType);
+                dFixedPrice = calcDiscount(fixedCostPrice, fixedPrice, rate, taxRate, discountType);
             } else {
                 dFixedPrice = BigDecimal.ZERO;
             }
-            BigDecimal dUnitPrice = calcDiscount(unitPrice, rate, discountType);
+            BigDecimal dUnitPrice = calcDiscount(unitcostPrice, unitPrice, rate, taxRate, discountType);
             BigDecimal amount;
-            if (PERCENTAGE.equals(discountType)) {
-                amount = quantity.multiply(dUnitPrice).add(dFixedPrice);
+            if (PERCENTAGE.equals(discountType)||BASE_COST.equals(discountType)) {
+                if (quantity.compareTo(BigDecimal.ZERO) == 0){
+                    amount = BigDecimal.ZERO;
+                } else {
+                amount = quantity.abs().multiply(dUnitPrice).add(dFixedPrice);
+                }
             } else {
                 amount = dUnitPrice.add(dFixedPrice);
             }
@@ -260,14 +371,19 @@ public class DiscountRules {
      *
      * @param amount       the amount
      * @param rate         the rate
+     * @param taxRate      the taxRate expressed as a percentage
      * @param discountType the discount type
      * @return amount * discountRate/100
      */
-    private BigDecimal calcDiscount(BigDecimal amount, BigDecimal rate, String discountType) {
+    private BigDecimal calcDiscount(BigDecimal costPrice, BigDecimal price, BigDecimal rate, BigDecimal taxRate, String discountType) {
         BigDecimal result;
         if (PERCENTAGE.equals(discountType)) {
-            return calcDiscount(amount, rate);
-        } else {
+            return calcDiscount(price, rate);
+        } else if(BASE_COST.equals(discountType)) {
+            BigDecimal adjCostPrice = costPrice.add(calcDiscount(costPrice, rate)); //find the cost plus
+            BigDecimal tCostPrice = adjCostPrice.add(calcDiscount(adjCostPrice, taxRate)); //find the tax plus
+            return price.subtract(tCostPrice); //subtract cost+rate+tax to generate discount.
+        }else{
             result = rate;
         }
         return result;

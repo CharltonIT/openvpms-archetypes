@@ -32,6 +32,7 @@
                 <propertyList name="entries">
                     <property name="FIXED" value="Fixed"/>
                     <property name="PERCENTAGE" value="Percentage"/>
+                    <property name="BASE_COST" value="Cost + Rate + Tax" />
                 </propertyList>
                 <errorMessage>errorMessage</errorMessage>
             </assertion>
