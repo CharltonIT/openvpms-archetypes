@@ -324,7 +324,19 @@ public class ProductPriceRules {
         }
         return markup;
     }
-
+    /**
+     * Calculates the maximum discount that can be applied given the current markup.
+     * Uses the equation (markup/(100+markup)) * 100 
+     * @param markup a BigDecimal representing the markup as a percentage
+     * @return the discount as a percentage rounded down
+     */
+    public BigDecimal calcMaxDiscount(BigDecimal markup) {
+        BigDecimal discount = DEFAULT_MAX_DISCOUNT;
+        if (markup.compareTo(ONE) > 0){
+        markup = getRate(markup);
+        discount = markup.divide(ONE.add(markup), RoundingMode.HALF_DOWN).multiply(MathRules.ONE_HUNDRED);}
+        return discount;
+    }
     /**
      * Updates the cost node of any <em>productPrice.unitPrice</em>
      * associated with a product active at the current time, and recalculates its price.
@@ -380,6 +392,20 @@ public class ProductPriceRules {
         BigDecimal result = bean.getBigDecimal("maxDiscount");
         return (result == null) ? DEFAULT_MAX_DISCOUNT : result;
     }
+    
+    /**
+     * Returns the cost price for a product price.
+     * 
+     * @param price
+     * @return cost as a BigDecimal  
+     */
+    
+    public BigDecimal getCostPrice(ProductPrice price) {
+        IMObjectBean bean = new IMObjectBean(price);
+        BigDecimal result =  bean.getBigDecimal("cost");
+        return result;
+    }
+     
 
     /**
      * Returns the pricing groups for a price.
