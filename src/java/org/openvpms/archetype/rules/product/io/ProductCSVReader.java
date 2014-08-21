@@ -418,7 +418,7 @@ public class ProductCSVReader extends AbstractCSVReader implements ProductReader
         String value = StringUtils.trimToNull(line[index]);
         if (value != null) {
             codes = value.split(" ");
-}
+        }
         for (String code : codes) {
             Lookup lookup = lookups.getLookup(ProductArchetypes.PRICING_GROUP, code);
             if (lookup == null) {
