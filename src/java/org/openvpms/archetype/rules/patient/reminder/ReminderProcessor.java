@@ -104,6 +104,7 @@ public class ReminderProcessor
      * @param processingDate the processing date
      * @param disableSMS     if {@code true}, ignore any reminder templates with {@code sms = true}
      * @param service        the archetype service
+     * @param patientRules   the patient rules
      */
     public ReminderProcessor(Date from, Date to, Date processingDate, boolean disableSMS, IArchetypeService service,
                              PatientRules patientRules) {
@@ -176,6 +177,7 @@ public class ReminderProcessor
             IMObjectBean templateBean = new IMObjectBean(template, service);
             boolean list = templateBean.getBoolean("list");
             boolean export = templateBean.getBoolean("export");
+            boolean alwaysPrint = templateBean.getBoolean("alwaysprint");
             boolean canSMSTemplate = !disableSMS && canSMSTemplate(documentTemplate);
             boolean sms = templateBean.getBoolean("sms") && canSMSTemplate;
             if (!list && !export && documentTemplate == null) {
@@ -184,7 +186,7 @@ public class ReminderProcessor
                 result = skip(reminder, reminderType, patient);
             } else {
                 Party customer = getCustomer(patient);
-                Contact contact = getContact(customer, sms);
+                Contact contact = getContact(customer, sms, alwaysPrint);
                 if (list) {
                     result = list(reminder, reminderType, patient, customer, contact, documentTemplate);
                 } else if (TypeHelper.isA(contact, ContactArchetypes.LOCATION)) {
@@ -478,7 +480,7 @@ public class ReminderProcessor
      * @return the default contact, or {@code null}
      */
     private Contact getContact(Party customer) {
-        return getContact(customer, false);
+        return getContact(customer, false, false);
     }
 
     /**
@@ -488,9 +490,10 @@ public class ReminderProcessor
      * @param sms      if {@code true}, return an SMS contact, if one is present
      * @return the contact, or {@code null}
      */
-    private Contact getContact(Party customer, boolean sms) {
+    private Contact getContact(Party customer, boolean sms, boolean alwaysprint) {
         Contact result = null;
         if (customer != null) {
+            if(!alwaysprint){
             if (sms) {
                 result = rules.getSMSContact(customer.getContacts());
                 if (result == null) {
@@ -499,6 +502,10 @@ public class ReminderProcessor
             } else {
                 result = rules.getContact(customer.getContacts());
             }
+            }else{
+                result = rules.getLocationContact(customer.getContacts());
+        }
+                
         }
         return result;
     }
