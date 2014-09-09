@@ -46,6 +46,7 @@ import java.util.List;
 
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
+import static org.openvpms.archetype.rules.math.MathRules.ONE_HUNDRED;
 import static org.openvpms.archetype.rules.product.ProductArchetypes.FIXED_PRICE;
 import static org.openvpms.component.business.service.archetype.functor.IsActiveRelationship.isActive;
 
@@ -60,7 +61,7 @@ public class ProductPriceRules {
     /**
      * Default maximum discount.
      */
-    public static final BigDecimal DEFAULT_MAX_DISCOUNT = new BigDecimal("100");
+    public static final BigDecimal DEFAULT_MAX_DISCOUNT = MathRules.ONE_HUNDRED;
 
     /**
      * The archetype service.
@@ -317,26 +318,31 @@ public class ProductPriceRules {
             }
             markup = price.divide(
                     cost.multiply(ONE.add(taxRate)), 3,
-                    RoundingMode.HALF_UP).subtract(ONE).multiply(MathRules.ONE_HUNDRED);
+                    RoundingMode.HALF_UP).subtract(ONE).multiply(ONE_HUNDRED);
             if (markup.compareTo(ZERO) < 0) {
                 markup = ZERO;
             }
         }
         return markup;
     }
+
     /**
-     * Calculates the maximum discount that can be applied given the current markup.
-     * Uses the equation (markup/(100+markup)) * 100 
-     * @param markup a BigDecimal representing the markup as a percentage
+     * Calculates the maximum discount that can be applied for a given markup.
+     * <p/>
+     * Uses the equation:
+     * <code>(markup / (100 + markup)) * 100</code>
+     *
+     * @param markup the markup expressed as a percentage
      * @return the discount as a percentage rounded down
      */
     public BigDecimal calcMaxDiscount(BigDecimal markup) {
         BigDecimal discount = DEFAULT_MAX_DISCOUNT;
-        if (markup.compareTo(ONE) > 0){
-        markup = getRate(markup);
-        discount = markup.divide(ONE.add(markup), RoundingMode.HALF_DOWN).multiply(MathRules.ONE_HUNDRED);}
+        if (markup.compareTo(BigDecimal.ZERO) > 0) {
+            discount = markup.divide(ONE_HUNDRED.add(markup), 3, RoundingMode.HALF_DOWN).multiply(ONE_HUNDRED);
+        }
         return discount;
     }
+
     /**
      * Updates the cost node of any <em>productPrice.unitPrice</em>
      * associated with a product active at the current time, and recalculates its price.
@@ -388,24 +394,10 @@ public class ProductPriceRules {
      *         with the price.
      */
     public BigDecimal getMaxDiscount(ProductPrice price) {
-        IMObjectBean bean = new IMObjectBean(price);
+        IMObjectBean bean = new IMObjectBean(price, service);
         BigDecimal result = bean.getBigDecimal("maxDiscount");
         return (result == null) ? DEFAULT_MAX_DISCOUNT : result;
     }
-    
-    /**
-     * Returns the cost price for a product price.
-     * 
-     * @param price
-     * @return cost as a BigDecimal  
-     */
-    
-    public BigDecimal getCostPrice(ProductPrice price) {
-        IMObjectBean bean = new IMObjectBean(price);
-        BigDecimal result =  bean.getBigDecimal("cost");
-        return result;
-    }
-     
 
     /**
      * Returns the pricing groups for a price.
@@ -416,6 +408,18 @@ public class ProductPriceRules {
     public List<Lookup> getPricingGroups(ProductPrice price) {
         IMObjectBean bean = new IMObjectBean(price, service);
         return bean.getValues("pricingGroups", Lookup.class);
+    }
+
+    /**
+     * Returns the cost price for a product price.
+     *
+     * @param price the cost price
+     * @return the cost price
+     */
+
+    public BigDecimal getCostPrice(ProductPrice price) {
+        IMObjectBean bean = new IMObjectBean(price, service);
+        return bean.getBigDecimal("cost", BigDecimal.ZERO);
     }
 
     /**
@@ -477,7 +481,7 @@ public class ProductPriceRules {
      */
     private BigDecimal getRate(BigDecimal percent) {
         if (percent.compareTo(ZERO) != 0) {
-            return MathRules.divide(percent, MathRules.ONE_HUNDRED, 3);
+            return MathRules.divide(percent, ONE_HUNDRED, 3);
         }
         return ZERO;
     }
