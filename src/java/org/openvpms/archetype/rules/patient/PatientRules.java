@@ -234,19 +234,7 @@ public class PatientRules {
         Party owner = getOwner(patient);
         return (owner != null && owner.equals(customer));
     }
-    /**
-     * Returns the referral vet for a patient.
-     * This is the associated party from the first matching
-     * <em>entityRelationship.referredFrom</em> or
-     * <em>entityrRelationship.referredTo</em> overlapping the current time.
-     *
-     * @param patient the patient
-     * @return the referral vet, or {@code null} if none is founds
-     * @throws ArchetypeServiceException for any archetype service error
-     */
-    public Party getReferralVet(Party patient) {
-        return  getReferralVet(patient, new Date());
-    }
+
     /**
      * Returns the referral vet for a patient.
      * This is the associated party from the first matching
@@ -593,16 +581,7 @@ public class PatientRules {
     public String getPetTag(Party patient) {
         return getIdentity(patient, "entityIdentity.petTag");
     }
-        /**
-     * Returns the the ID of the Patient.
-     *
-     * @param patient the patient
-     * @return the patient ID
-     */
-    public String getID(Party patient) {
-        return String.valueOf(patient.getId());
-        
-    }
+
     /**
      * Merges two patients.
      *

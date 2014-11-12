@@ -343,6 +343,7 @@ public class PartyRules {
         Contact contact = getContact(party, ContactArchetypes.PHONE, null, false);
         return (contact != null) ? formatPhone(contact, withName) : "";
     }
+
     /**
      * Returns a formatted preferred telephone number for a party associated with
      * an act via an <em>participation.customer</em> participation.
@@ -588,40 +589,6 @@ public class PartyRules {
     }
 
     /**
-     /**
-     * Returns a formatted telephone number from a <em>contact.phoneNumber</em>.
-     *
-     * @param contact the contact
-     * @return a formatted telephone number
-     */
-    private String formatPhone(Contact contact) {
-
-          return formatPhone(contact, false);
-    }
-       /**
-     * Returns a formatted telephone number from a <em>contact.phoneNumber</em>.
-     *
-     * @param contact the contact
-     * @paran withName if {@code true} returns the description of the number 
-     * @return a formatted telephone number
-     */
-    private String formatPhone(Contact contact, Boolean withName) {
-        IMObjectBean bean = new IMObjectBean(contact, service);
-        String areaCode = bean.getString("areaCode");
-        String phone = bean.getString("telephoneNumber", "");
-        if(withName) {
-            String name = bean.getString("name");
-            phone += " (" + name +")";
-        }
-            
-        if (StringUtils.isEmpty(areaCode)) {
-            return phone;
-        } else {
-            return "(" + areaCode + ") " + phone;
-        }
-    }
-
-    /**
      * Returns the Practice party
      *
      * @return the practice party object
@@ -823,4 +790,30 @@ public class PartyRules {
         result.append(bean.getString("postcode", ""));
         return result.toString();
     }
+
+    /**
+     * Returns a formatted telephone number from a <em>contact.phoneNumber</em>.
+     *
+     * @param contact  the contact
+     * @param withName if {@code true} includes the name, if it is not the default value for the contact
+     * @return a formatted telephone number
+     */
+    private String formatPhone(Contact contact, boolean withName) {
+        IMObjectBean bean = new IMObjectBean(contact, service);
+        String areaCode = bean.getString("areaCode");
+        String phone = bean.getString("telephoneNumber", "");
+        if (withName) {
+            String name = contact.getName();
+            if (!StringUtils.isEmpty(name) && bean.hasNode("name") && !bean.isDefaultValue("name")) {
+                phone += " (" + name + ")";
+            }
+        }
+
+        if (StringUtils.isEmpty(areaCode)) {
+            return phone;
+        } else {
+            return "(" + areaCode + ") " + phone;
+        }
+    }
+
 }

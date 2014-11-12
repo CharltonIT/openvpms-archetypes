@@ -81,18 +81,9 @@ public class ReminderRules {
      * Reminder due indicator.
      */
     public enum DueState {
-        /**
-         * indicates the reminder is in the future, outside the sensitivity period
-         */
-        NOT_DUE,     
-        /**
-         * indicates the reminder is inside the sensitivity period
-         */
-        DUE,   
-        /**
-         * indicates the reminder is overdue
-         */
-        OVERDUE  
+        NOT_DUE,      // indicates the reminder is in the future, outside the sensitivity period
+        DUE,          // indicates the reminder is inside the sensitivity period
+        OVERDUE       // indicates the reminder is overdue
     }
 
     /**

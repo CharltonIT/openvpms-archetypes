@@ -104,7 +104,6 @@ public class ReminderProcessor
      * @param processingDate the processing date
      * @param disableSMS     if {@code true}, ignore any reminder templates with {@code sms = true}
      * @param service        the archetype service
-     * @param patientRules   the patient rules
      */
     public ReminderProcessor(Date from, Date to, Date processingDate, boolean disableSMS, IArchetypeService service,
                              PatientRules patientRules) {
