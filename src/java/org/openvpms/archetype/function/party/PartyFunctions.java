@@ -192,7 +192,33 @@ public class PartyFunctions {
     public Party getPatientCurrentOwner(Act act) {
         return patientRules.getCurrentOwner(act);
     }
-
+    /** 
+     * Returns the location party for the patient associated with an act.
+     * @param patient the patient 
+     * @return the associated party at the patient location. or {@code null}
+     */
+    public Party getPatientLocation(Party patient) {
+        return patientRules.getLocation(patient);
+    }
+    
+    /** 
+     * Returns the location party for the patient associated with an act.
+     * @param act 
+     * @return the associated party at the patient location. or {@code null}
+     */
+    public Party getPatientLocation(Act act) {
+        return patientRules.getLocation(act);
+    }
+    
+     /** 
+     * Returns the current location party for the patient associated with an act.
+     * @param act 
+     * @return the associated party at the patient location. or {@code null}
+     */
+    public Party getPatientCurrentLocation(Act act){
+        return patientRules.getCurrentLocation(act);
+    }
+    
     /**
      * Marks a patient as being inactive.
      *

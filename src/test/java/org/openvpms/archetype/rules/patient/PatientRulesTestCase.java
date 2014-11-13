@@ -77,10 +77,13 @@ public class PatientRulesTestCase extends ArchetypeServiceTest {
         Party patient1 = TestHelper.createPatient();
         assertNull(rules.getOwner(patient1));
         assertNull(rules.getOwnerReference(patient1));
-
+        
         Party customer = TestHelper.createCustomer();
         Party patient2 = TestHelper.createPatient();
+        Party customer2 = TestHelper.createCustomer();
+        rules.addPatientLocationRelationship(customer2, patient2);
         rules.addPatientOwnerRelationship(customer, patient2);
+        
         assertEquals(customer, rules.getOwner(patient2));
         assertEquals(customer.getObjectReference(),
                      rules.getOwnerReference(patient2));
@@ -130,17 +133,89 @@ public class PatientRulesTestCase extends ArchetypeServiceTest {
     @Test
     public void testIsOwner() {
         Party patient1 = TestHelper.createPatient();
-        Party customer = TestHelper.createCustomer();
+        Party customer1 = TestHelper.createCustomer();
         Party patient2 = TestHelper.createPatient();
-        rules.addPatientOwnerRelationship(customer, patient2);
+        Party customer2 = TestHelper.createCustomer();
+        rules.addPatientOwnerRelationship(customer1, patient2);
+        rules.addPatientLocationRelationship(customer2, patient2);
 
-        assertFalse(rules.isOwner(customer, patient1));
-        assertTrue(rules.isOwner(customer, patient2));
+        assertFalse(rules.isOwner(customer1, patient1));
+        assertTrue(rules.isOwner(customer1, patient2));
 
         deactivateOwnerRelationship(patient2);
-        assertFalse(rules.isOwner(customer, patient2));
+        assertFalse(rules.isOwner(customer1, patient2));
+        
     }
+    /**
+     *  Test the {@link PatientRules#getLocation} methods
+     */
+    @Test
+    public void testGetLocation() {
+        Party patient1 = TestHelper.createPatient();
+        assertNull(rules.getLocation(patient1));
+        assertNull(rules.getLocationReference(patient1));
 
+        Party customer = TestHelper.createCustomer();
+        Party patient2 = TestHelper.createPatient();
+        rules.addPatientLocationRelationship(customer, patient2);
+        assertEquals(customer, rules.getLocation(patient2));
+
+        assertEquals(customer.getObjectReference(),
+                     rules.getLocationReference(patient2));
+
+        deactivateLocationRelationship(patient2);
+        assertNull(rules.getOwner(patient2));
+        assertNull(rules.getOwnerReference(patient2));
+    }    /**
+     * Tests the {@link PatientRules#getLocation(Act)} method.
+     */
+    @Test
+    public void testGetLocationFromAct() {
+        Party patient = TestHelper.createPatient();
+        Party customer1 = TestHelper.createCustomer();
+        Party customer2 = TestHelper.createCustomer();
+
+
+        checkLocation(patient, "2006-12-10", null); // no owner
+
+        EntityRelationship r1 = rules.addPatientLocationRelationship(customer1,
+                                                                  patient);
+        EntityRelationship r2 = rules.addPatientLocationRelationship(customer2,
+                                                                  patient);
+
+        r1.setActiveStartTime(getDate("2007-01-01"));
+        r1.setActiveEndTime(getDate("2007-01-31"));
+        r2.setActiveStartTime(getDate("2007-02-02"));
+        r2.setActiveEndTime(null);
+
+        save(patient);
+        save(customer1);
+        save(customer2);
+
+        checkLocation(patient, "2006-12-10", customer1); // customer1 closest
+        checkLocation(patient, "2007-01-01", customer1); // exact match
+        checkLocation(patient, "2007-01-31", customer1); // exact match
+        checkLocation(patient, "2007-02-01", customer2); // customer2 closest
+        checkLocation(patient, "2007-02-02", customer2); // exact match
+        checkLocation(patient, "2008-01-01", customer2); // unbounded end time
+    }
+    /**
+     * Tests the {@link PatientRules#isLocation} method.
+     */
+    @Test
+    public void testIsLocation() {
+        Party patient1 = TestHelper.createPatient();
+        Party customer = TestHelper.createCustomer();
+        Party patient2 = TestHelper.createPatient();
+        rules.addPatientLocationRelationship(customer, patient2);
+
+        assertFalse(rules.isLocation(customer, patient1));
+        assertTrue(rules.isLocation(customer, patient2));
+
+        deactivateLocationRelationship(patient2);
+        assertFalse(rules.isLocation(customer, patient2));
+    }
+    
     /**
      * Tests the {@link PatientRules#getReferralVet} method.
      */
@@ -340,6 +415,14 @@ public class PatientRulesTestCase extends ArchetypeServiceTest {
         bean.addParticipation("participation.patient", patient);
         assertEquals(expected, rules.getOwner(act));
     }
+    
+    private void checkLocation(Party patient, String date, Party expected) {
+        Act act = new Act();
+        act.setActivityStartTime(getDate(date));
+        ActBean bean = new ActBean(act);
+        bean.addParticipation("participation.patient", patient);
+        assertEquals(expected, rules.getLocation(act));
+    }
 
     /**
      * Marks the patient-owner relationship inactive.
@@ -350,6 +433,24 @@ public class PatientRulesTestCase extends ArchetypeServiceTest {
         EntityBean bean = new EntityBean(patient);
         for (EntityRelationship relationship
                 : bean.getRelationships(PatientArchetypes.PATIENT_OWNER)) {
+            relationship.setActive(false);
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignore) {
+            // do nothing
+        }
+    }
+    
+    /**
+     * Marks the patient-location relationship inactive.
+     *
+     * @param patient the patient
+     */
+    private void deactivateLocationRelationship(Party patient) {
+        EntityBean bean = new EntityBean(patient);
+        for (EntityRelationship relationship
+                : bean.getRelationships(PatientArchetypes.PATIENT_LOCATION)) {
             relationship.setActive(false);
         }
         try {

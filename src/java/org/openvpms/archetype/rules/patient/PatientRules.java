@@ -44,6 +44,7 @@ import org.openvpms.component.system.common.query.NodeSelectConstraint;
 import org.openvpms.component.system.common.query.ObjectSet;
 import org.openvpms.component.system.common.query.ObjectSetQueryIterator;
 import org.openvpms.component.system.common.query.ParticipationConstraint;
+import org.openvpms.component.business.service.archetype.functor.IsA;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -59,7 +60,6 @@ import static org.openvpms.component.system.common.query.ParticipationConstraint
 /**
  * Patient rules.
  *
- * @author Tim Anderson
  */
 public class PatientRules {
 
@@ -124,6 +124,23 @@ public class PatientRules {
         relationship.setActiveStartTime(new Date());
         return relationship;
     }
+    
+        /**
+     * Adds a patient-location relationship between the supplied customer and
+     * patient.
+     *
+     * @param customer the customer
+     * @param patient  the patient
+     * @return the relationship
+     * @throws ArchetypeServiceException for any archetype service error
+     */
+    public EntityRelationship addPatientLocationRelationship(Party customer,
+                                                          Party patient) {
+        EntityBean bean = factory.createEntityBean(customer);
+        EntityRelationship relationship = bean.addRelationship(PatientArchetypes.PATIENT_LOCATION, patient);
+        relationship.setActiveStartTime(new Date());
+        return relationship;
+    }
 
     /**
      * Returns the owner of a patient associated with an act.
@@ -164,7 +181,7 @@ public class PatientRules {
     public Party getCurrentOwner(Act act) {
         ActBean bean = factory.createActBean(act);
         Party patient = (Party) bean.getParticipant("participation.patient");
-        return getOwner(patient, new Date(), true);
+        return getOwner(patient, new Date(), true); 
     }
 
     /**
@@ -217,11 +234,16 @@ public class PatientRules {
      */
     public IMObjectReference getOwnerReference(Party patient) {
         EntityBean bean = factory.createEntityBean(patient);
-        List<IMObjectReference> refs
-                = bean.getNodeSourceEntityRefs("customers", new Date());
-        return refs.isEmpty() ? null : refs.get(0);
+        //List<IMObjectReference> refs = bean.getNodeSourceEntityRefs("customers", new Date());
+        EntityRelationship er = bean.getNodeRelationship("customers", new IsA(PatientArchetypes.PATIENT_OWNER));
+        if (er !=null && er.isActive()){
+            return er.getSource();
+        }else{
+            return null;
+        }
+       //return refs.isEmpty() ? null : refs.get(0);
     }
-
+    
     /**
      * Determines if a patient has a customer as its owner.
      *
@@ -233,6 +255,118 @@ public class PatientRules {
     public boolean isOwner(Party customer, Party patient) {
         Party owner = getOwner(patient);
         return (owner != null && owner.equals(customer));
+    }
+    
+    public Party getLocation(Act act) {
+        ActBean bean = factory.createActBean(act);
+        Party patient = (Party) bean.getParticipant("participation.patient");
+        Date startTime = act.getActivityStartTime();
+        return getLocation(patient, startTime, false);
+    }
+
+    /**
+     * Returns the owner of a patient.
+     *
+     * @param patient the patient
+     * @return the patient's owner, or {@code null} if none can be found
+     * @throws ArchetypeServiceException for any archetype service error
+     */
+    public Party getLocation(Party patient) {
+        return getLocation(patient, new Date(), true);
+    }
+
+    /**
+     * Returns the most current owner of a patient associated with an act.
+     *
+     * @param act the act
+     * @return the patient's owner, or {@code null} if none can be found
+     * @throws ArchetypeServiceException for any archetype service error
+     */
+    public Party getCurrentLocation(Act act) {
+        ActBean bean = factory.createActBean(act);
+        Party patient = (Party) bean.getParticipant("participation.patient");
+        return getLocation(patient, new Date(), true); 
+    }
+    
+    /**
+     * Returns the Location owner of a patient for a specified date
+     *
+     * @param patient   the patient
+     * @param startTime the date to search for the ownership
+     * @param active    only check active ownerships
+     * @return the patient's location owner, or {@code null} if none can be found
+     * @throws ArchetypeServiceException for any archetype service error
+     */
+    public Party getLocation(Party patient, Date startTime, boolean active) {
+        Party location = null;
+        if (patient != null && startTime != null) {
+            EntityBean patientBean = factory.createEntityBean(patient);
+            location = (Party) patientBean.getSourceEntity(PatientArchetypes.PATIENT_LOCATION, startTime, false);
+            if (location == null && !active) {
+                // no match for the start time, so try and find an owner close
+                // to the start time
+                EntityRelationship match = null;
+                List<EntityRelationship> relationships
+                        = patientBean.getRelationships(PatientArchetypes.PATIENT_LOCATION, false);
+
+                for (EntityRelationship relationship : relationships) {
+                    if (match == null) {
+                        location = get(relationship.getSource());
+                        if (location != null) {
+                            match = relationship;
+                        }
+                    } else {
+                        if (closerTime(startTime, relationship, match)) {
+                            Party party = get(relationship.getSource());
+                            if (party != null) {
+                                location = party;
+                                match = relationship;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return location;
+    }
+    
+       /**
+     * Returns a reference to the location of a patient.
+     *
+     * @param patient the patient
+     * @return a reference to the owner, or {@code null} if none can be found
+     */
+    public IMObjectReference getLocationReference(Party patient) {
+        EntityBean bean = factory.createEntityBean(patient);
+        //List<IMObjectReference> refs = bean.getNodeSourceEntityRefs("customers", new Date());
+        //        if (!refs.isEmpty()){
+//        for (IMObjectReference ref : refs) {
+//            if(ref.getArchetypeId().getEntityName()==PatientArchetypes.PATIENT_LOCATION){
+//            return ref;
+//            }
+//         }
+//        }
+//        return null;
+        EntityRelationship er = bean.getNodeRelationship("customers", new IsA(PatientArchetypes.PATIENT_OWNER));
+        if (er !=null && er.isActive()){
+            return er.getSource();
+        }else{
+            return null;
+        }
+
+    }
+    
+    /**
+     * Determines if a patient has a customer as its owner.
+     *
+     * @param customer the customer
+     * @param patient  the patient
+     * @return {@code true} if the customer is the owner of the patient
+     * @throws ArchetypeServiceException for any archetype service error
+     */
+    public boolean isLocation(Party customer, Party patient) {
+        Party location = getLocation(patient);
+        return (location != null && location.equals(customer));
     }
 
     /**

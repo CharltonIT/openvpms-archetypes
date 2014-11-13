@@ -54,6 +54,12 @@ public class PatientArchetypes {
      */
     public static final String PATIENT_OWNER
             = "entityRelationship.patientOwner";
+    /**
+     * Patient Location relationship short name.
+     */
+    
+    public static final String PATIENT_LOCATION 
+            = "entityRelationship.patientLocation";
 
     /**
      * Patient clinical event act short name.
