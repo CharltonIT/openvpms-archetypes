@@ -40,8 +40,13 @@ import org.openvpms.component.system.common.query.IPage;
 import org.openvpms.component.system.common.query.JoinConstraint;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeMap;
+import org.apache.commons.collections.ComparatorUtils;
+import org.openvpms.component.business.domain.im.common.EntityIdentity;
+import org.openvpms.component.business.service.archetype.helper.TypeHelper;
 
 import static org.openvpms.component.business.service.archetype.functor.IsActiveRelationship.isActiveNow;
 import static org.openvpms.component.system.common.query.Constraints.eq;
@@ -315,5 +320,82 @@ public class ProductRules {
         }
         return result;
     }
-
+    /**
+     * 
+     * @param product
+     * @return  a string of identities seperated by comma's
+     */
+    public String getIdentities(Entity product) {
+         StringBuilder result = new StringBuilder();
+         for (EntityIdentity identity: getIdentities(product,null)) {
+             if (result.length() != 0) {
+                        result.append(", ");
+                    }
+             result.append(identity.toString());
+         }
+         return result.toString();
+    }
+    /**
+     * A single bar code with the highest id  as a String 
+     * 
+     * @param product
+     * @return A single bar code with the highest id  as a String 
+     */
+    
+    public String getBarcode(Entity product){
+        return getIdentities(product,"entityIdentity.barcode").iterator().next().getIdentity();    }
+    /**
+     * A String of barcodes comma delimited
+     * @param product
+     * @return A String of barcodes comma delimited
+     */
+    public String getBarcodes(Entity product){
+         StringBuilder result = new StringBuilder();
+         for (EntityIdentity identity: getIdentities(product,"entityIdentity.barcode")) {
+             if (result.length() != 0) {
+                        result.append(", ");
+                    }
+             result.append(identity.toString());
+         }
+         return result.toString();
+    }
+    
+    /**
+     * A String of codes comma delimited
+     * @param product
+     * @return  String of codes comma delimited
+     */
+    public String getCodes(Entity product){
+        StringBuilder result = new StringBuilder();
+         for (EntityIdentity identity: getIdentities(product,"entityIdentity.code")) {
+             if (result.length() != 0) {
+                        result.append(", ");
+                    }
+             result.append(identity.toString());
+         }
+         return result.toString();
+    }
+   /**
+    * A Collection of entity.Identities limited by Shortname.
+    * @param product the product to search on
+    * @param shortName the archetype to return can be null
+    * @return Collection of entity.Identities.
+    */
+    private Collection<EntityIdentity> getIdentities(Entity product, String shortName){
+        TreeMap<Long, EntityIdentity> result = new TreeMap<Long, EntityIdentity>(ComparatorUtils.reversedComparator(ComparatorUtils.NATURAL_COMPARATOR));
+        for (EntityIdentity identity : product.getIdentities()) {
+            if(shortName==null) {
+            if (identity.isActive()) {
+                result.put(identity.getId(), identity);
+                }
+            }else
+            {
+            if (identity.isActive() && TypeHelper.isA(identity, shortName)) {
+                result.put(identity.getId(), identity);
+                }
+            }
+            
+        }
+        return result.values(); 
+    }
 }
