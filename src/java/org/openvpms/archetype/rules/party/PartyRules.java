@@ -475,22 +475,13 @@ public class PartyRules {
      *
      * @param party the party
      * @return a formatted fax number for a party. May be empty if
-     *         there is no corresponding <em>contact.faxNumber</em> contact
+     *         there is no corresponding <em>contact.phoneNumber</em> contact
+     *         with a purpose as FAX
      * @throws ArchetypeServiceException for any archetype service error
      */
     public String getFaxNumber(Party party) {
-        Contact contact = getContact(party, ContactArchetypes.FAX, null);
-        if (contact != null) {
-            IMObjectBean bean = new IMObjectBean(contact, service);
-            String areaCode = bean.getString("areaCode");
-            String faxNumber = bean.getString("faxNumber");
-            if (areaCode == null || areaCode.equals("")) {
-                return faxNumber;
-            } else {
-                return "(" + areaCode + ") " + faxNumber;
-            }
-        }
-        return "";
+        Contact contact = getContact(party, ContactArchetypes.PHONE,"FAX", true);
+        return (contact != null) ? formatPhone(contact,false) : "";
     }
 
     /**

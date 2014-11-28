@@ -46,14 +46,11 @@
               type="java.util.HashSet" baseName="Contact" minCardinality="0" maxCardinality="*">
             <assertion name="archetypeRange">
                 <propertyList name="archetypes">
-                    <propertyMap name="archetype">
+					</propertyMap>
                         <property name="shortName" value="contact.location"/>
                     </propertyMap>
                     <propertyMap name="archetype">
                         <property name="shortName" value="contact.phoneNumber"/>
-                    </propertyMap>
-                    <propertyMap name="archetype">
-                        <property name="shortName" value="contact.faxNumber"/>
                     </propertyMap>
                     <propertyMap name="archetype">
                         <property name="shortName" value="contact.email"/>

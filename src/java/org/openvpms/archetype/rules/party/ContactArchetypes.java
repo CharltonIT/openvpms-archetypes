@@ -44,8 +44,10 @@ public class ContactArchetypes {
 
     /**
      * Fax contact archetype short name.
+     * @deprecated use {@link #PHONE}
      */
-    public static final String FAX = "contact.faxNumber";
+    @Deprecated
+    public static final String FAX =  PHONE;
 
     /**
      * Location contact archetype short name.
