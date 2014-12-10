@@ -259,7 +259,8 @@ public class PartyRules {
      * @throws ArchetypeServiceException for any archetype service error
      */
     public String getCorrespondenceNameAddress(Party party) {
-        StringBuilder result = new StringBuilder();
+        StringBuilder result;
+        result = new StringBuilder();
         result.append(getFullName(party));
         result.append("\n");
         result.append(getAddress(party, "CORRESPONDENCE"));
@@ -340,7 +341,7 @@ public class PartyRules {
      *         <em>contact.phoneNumber</em> contact
      */
     public String getTelephone(Party party, boolean withName) {
-        Contact contact = getContact(party, ContactArchetypes.PHONE, null, false);
+        Contact contact = getContact(party, ContactArchetypes.PHONE,false, (String)null );
         return (contact != null) ? formatPhone(contact, withName) : "";
     }
 
@@ -370,8 +371,7 @@ public class PartyRules {
      * @throws ArchetypeServiceException for any archetype service error
      */
     public String getHomeTelephone(Party party) {
-        Contact contact = getContact(party, ContactArchetypes.PHONE, "HOME",
-                                     false);
+        Contact contact = getContact(party, ContactArchetypes.PHONE,false, "HOME");
         return (contact != null) ? formatPhone(contact, false) : "";
     }
 
@@ -402,8 +402,7 @@ public class PartyRules {
      * @throws ArchetypeServiceException for any archetype service error
      */
     public String getMobileTelephone(Party party) {
-        Contact contact = getContact(party, ContactArchetypes.PHONE, "MOBILE",
-                                     true);
+        Contact contact = getContact(party, ContactArchetypes.PHONE,true,"MOBILE");
         return (contact != null) ? formatPhone(contact, false) : "";
     }
 
@@ -434,8 +433,7 @@ public class PartyRules {
      * @throws ArchetypeServiceException for any archetype service error
      */
     public String getWorkTelephone(Party party) {
-        Contact contact = getContact(party, ContactArchetypes.PHONE, "WORK",
-                                     true);
+        Contact contact = getContact(party, ContactArchetypes.PHONE,true,"WORK");
         return (contact != null) ? formatPhone(contact, false) : "";
     }
 
@@ -480,7 +478,7 @@ public class PartyRules {
      * @throws ArchetypeServiceException for any archetype service error
      */
     public String getFaxNumber(Party party) {
-        Contact contact = getContact(party, ContactArchetypes.PHONE,"FAX", true);
+        Contact contact = getContact(party, ContactArchetypes.PHONE,true,"FAX");
         return (contact != null) ? formatPhone(contact,false) : "";
     }
 
@@ -564,7 +562,7 @@ public class PartyRules {
      * @throws ArchetypeServiceException for any archetype service error
      */
     public Contact getContact(Party party, String type, String purpose) {
-        return getContact(party, type, purpose, false);
+        return getContact(party, type, false, purpose);
     }
 
     /**
@@ -718,12 +716,18 @@ public class PartyRules {
      *
      * @param party   the party. May be {@code null}
      * @param type    the contact type
-     * @param purpose the contact purpose. May be {@code null}
+     * @param purposes the contact purposes. May be {@code null}
      * @param exact   if {@code true}, the contact must have the specified purpose
      * @return the matching contact or {@code null}
      */
-    private Contact getContact(Party party, String type, String purpose, boolean exact) {
-        return (party != null) ? getContact(party, new PurposeMatcher(type, purpose, exact, service)) : null;
+    public Contact getContact(Party party, String type, boolean exact, String... purposes) {
+        PurposeMatcher matcher = new PurposeMatcher(type, purposes[0], exact, service);
+        if(purposes.length > 1){
+            for (String purpose:purposes){
+                matcher.addPurpose(purpose);
+            }
+        }
+        return (party != null) ? getContact(party, matcher) : null;
     }
 
     /**

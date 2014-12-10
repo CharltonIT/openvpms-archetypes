@@ -20,6 +20,8 @@ import org.openvpms.component.business.domain.im.lookup.Lookup;
 import org.openvpms.component.business.domain.im.party.Contact;
 import org.openvpms.component.business.service.archetype.IArchetypeService;
 
+import java.util.*;
+
 /**
  * An {@link ContactMatcher} that matches contacts on archetype and purpose.
  *
@@ -30,7 +32,7 @@ public class PurposeMatcher extends ContactMatcher {
     /**
      * The purpose to match on.
      */
-    private final String purpose;
+    private final List<String> purposes;
 
     /**
      * If {@code true} the contact must contain the purpose to be returned
@@ -58,8 +60,35 @@ public class PurposeMatcher extends ContactMatcher {
      */
     public PurposeMatcher(String shortName, String purpose, boolean exact, IArchetypeService service) {
         super(shortName, service);
-        this.purpose = purpose;
+        this.purposes = new ArrayList<String>();
+        if (purpose != null){
+            purposes.add(purpose);
+        }
         this.exact = exact;
+    }
+
+    /**
+     * Adds another purpose to the {@link PurposeMatcher}.
+     * @param purpose
+     */
+    public void addPurpose(String purpose){
+        if (purpose != null){
+            purposes.add(purpose);
+        }
+    }
+
+    /**
+     * Removes a contact purpose from the {@Link PurposeMatcher}
+     * @param purpose a string
+     * @return {@code True} if successful
+     */
+    public boolean removePurpose(String purpose){
+        if (purpose != null){
+           return purposes.remove(purpose);
+        }else{
+            return false;
+        }
+
     }
 
     /**
@@ -82,32 +111,56 @@ public class PurposeMatcher extends ContactMatcher {
     protected boolean matchesPurpose(Contact contact) {
         boolean best = false;
         boolean preferred = isPreferred(contact);
-        if (purpose != null) {
-            if (hasContactPurpose(contact, purpose)) {
-                if (preferred) {
-                    setMatch(0, contact);
-                    best = true;
-                } else {
-                    setMatch(1, contact);
+        if(purposes.size() != 0){
+            if(exact){
+                int priority = purposes.size();
+                int i = 0;
+                if(preferred){i = 1;}
+                for(String purpose : purposes) {
+                    if(hasContactPurpose(contact, purpose)){
+                        i++;
+                    }
                 }
-            } else if (!exact) {
-                if (preferred) {
-                    setMatch(2, contact);
-                } else {
-                    setMatch(3, contact);
+                if(i>priority && preferred){ //has matched all purposes and is preferred
+                    setMatch(0,contact);
+                    best=true;
+                }else if(i==priority && !preferred){ //has matched all purposes and is not preferred
+                    setMatch(1,contact);
+                }
+            }else{
+                int priority = purposes.size();
+                int i = 0;
+                if(preferred){i = 1;}
+                for(String purpose : purposes) {
+                    if(hasContactPurpose(contact, purpose)){
+                        i++;
+                    }
+                }
+                if(i>priority && preferred){ //has matched all purposes and is preferred
+                    setMatch(0,contact);
+                    best=true;
+                }else if(i==priority && !preferred){ //has matched all purposes and is not preferred
+                    setMatch(1,contact);
+                }else if(i>0 && !preferred){ // has match some purposes and is not preferred.
+                    setMatch(priority-i,contact);
+                }else if(i>1 && preferred){ // has matched some purposes and is not preferred.
+                    setMatch(priority-i,contact);
+                }else if(i==0 && !preferred){
+                    setMatch(priority+2,contact); //matched no purposes and is not preferred
+                }else if(i==1 && preferred){
+                    setMatch(priority+1,contact); //matched no purposes and is preferred
                 }
             }
-        } else {
+        }else{
             if (preferred) {
-                setMatch(0, contact);
+                setMatch(1, contact);
                 best = true;
             } else {
-                setMatch(1, contact);
+                setMatch(2, contact);
             }
         }
         return best;
     }
-
     /**
      * Determines if a contact has a particular purpose.
      *
