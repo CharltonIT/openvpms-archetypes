@@ -20,7 +20,8 @@ import org.openvpms.component.business.domain.im.lookup.Lookup;
 import org.openvpms.component.business.domain.im.party.Contact;
 import org.openvpms.component.business.service.archetype.IArchetypeService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An {@link ContactMatcher} that matches contacts on archetype and purpose.
@@ -115,13 +116,12 @@ public class PurposeMatcher extends ContactMatcher {
             if(exact){
                 int priority = purposes.size();
                 int i = 0;
-                if(preferred){i = 1;}
                 for(String purpose : purposes) {
                     if(hasContactPurpose(contact, purpose)){
                         i++;
                     }
                 }
-                if(i>priority && preferred){ //has matched all purposes and is preferred
+                if(i==priority && preferred){ //has matched all purposes and is preferred
                     setMatch(0,contact);
                     best=true;
                 }else if(i==priority && !preferred){ //has matched all purposes and is not preferred
@@ -130,24 +130,23 @@ public class PurposeMatcher extends ContactMatcher {
             }else{
                 int priority = purposes.size();
                 int i = 0;
-                if(preferred){i = 1;}
                 for(String purpose : purposes) {
                     if(hasContactPurpose(contact, purpose)){
                         i++;
                     }
                 }
-                if(i>priority && preferred){ //has matched all purposes and is preferred
+                if(i==priority && preferred){ //has matched all purposes and is preferred
                     setMatch(0,contact);
                     best=true;
                 }else if(i==priority && !preferred){ //has matched all purposes and is not preferred
                     setMatch(1,contact);
                 }else if(i>0 && !preferred){ // has match some purposes and is not preferred.
-                    setMatch(priority-i,contact);
-                }else if(i>1 && preferred){ // has matched some purposes and is not preferred.
-                    setMatch(priority-i,contact);
+                    setMatch(priority-i+2,contact);
+                }else if(i>0 && preferred){ // has matched some purposes and is not preferred.
+                    setMatch(priority-i+1,contact);
                 }else if(i==0 && !preferred){
                     setMatch(priority+2,contact); //matched no purposes and is not preferred
-                }else if(i==1 && preferred){
+                }else if(i==0 && preferred){
                     setMatch(priority+1,contact); //matched no purposes and is preferred
                 }
             }
