@@ -11,7 +11,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * Copyright 2014 (C) OpenVPMS Ltd. All Rights Reserved.
+ * Copyright 2015 (C) OpenVPMS Ltd. All Rights Reserved.
  */
 
 package org.openvpms.archetype.rules.patient.reminder;
@@ -30,7 +30,6 @@ import org.openvpms.component.business.domain.im.common.EntityRelationship;
 import org.openvpms.component.business.domain.im.party.Contact;
 import org.openvpms.component.business.domain.im.party.Party;
 import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
-import org.openvpms.component.business.service.lookup.LookupServiceHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -78,13 +77,13 @@ public class ReminderProcessorTestCase extends ArchetypeServiceTest {
      */
     @Before
     public void setUp() {
-        rules = new PatientRules(getArchetypeService(), LookupServiceHelper.getLookupService());
+        rules = new PatientRules(getArchetypeService(), getLookupService());
         reminderRules = new ReminderRules(getArchetypeService(), rules);
         customer = TestHelper.createCustomer(false);
         customer.getContacts().clear();
         save(customer);
         patient = TestHelper.createPatient(customer);
-        reminderType = ReminderTestHelper.createReminderType();
+        reminderType = ReminderTestHelper.createReminderType(1, DateUnits.MONTHS, 1, DateUnits.DAYS);
     }
 
     /**

@@ -11,7 +11,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * Copyright 2014 (C) OpenVPMS Ltd. All Rights Reserved.
+ * Copyright 2015 (C) OpenVPMS Ltd. All Rights Reserved.
  */
 
 package org.openvpms.archetype.rules.patient.reminder;
@@ -39,8 +39,6 @@ import org.openvpms.component.business.domain.im.product.Product;
 import org.openvpms.component.business.service.archetype.helper.ActBean;
 import org.openvpms.component.business.service.archetype.helper.EntityBean;
 import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
-import org.openvpms.component.business.service.lookup.ILookupService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -73,17 +71,10 @@ public class ReminderRulesTestCase extends ArchetypeServiceTest {
      */
     private ReminderRules rules;
 
-    /**
-     * The lookup service.
-     */
-    @Autowired
-    private ILookupService lookups;
-
 
     /**
      * Tests the {@link ReminderRules#markMatchingRemindersCompleted(Act)}
-     * method, when invoked via the
-     * <em>archetypeService.save.act.patientReminder.before</em> rule.
+     * method, when invoked via the <em>archetypeService.save.act.patientReminder.before</em> rule.
      */
     @Test
     public void testMarkMatchingRemindersCompleted() {
@@ -220,14 +211,10 @@ public class ReminderRulesTestCase extends ArchetypeServiceTest {
      */
     @Test
     public void testCalculateReminderDueDate() {
-        checkCalculateReminderDueDate(1, DateUnits.DAYS, "2007-01-01",
-                                      "2007-01-02");
-        checkCalculateReminderDueDate(2, DateUnits.WEEKS, "2007-01-01",
-                                      "2007-01-15");
-        checkCalculateReminderDueDate(2, DateUnits.MONTHS, "2007-01-01",
-                                      "2007-03-01");
-        checkCalculateReminderDueDate(5, DateUnits.YEARS, "2007-01-01",
-                                      "2012-01-01");
+        checkCalculateReminderDueDate(1, DateUnits.DAYS, "2007-01-01", "2007-01-02");
+        checkCalculateReminderDueDate(2, DateUnits.WEEKS, "2007-01-01", "2007-01-15");
+        checkCalculateReminderDueDate(2, DateUnits.MONTHS, "2007-01-01", "2007-03-01");
+        checkCalculateReminderDueDate(5, DateUnits.YEARS, "2007-01-01", "2012-01-01");
     }
 
     /**
@@ -339,7 +326,7 @@ public class ReminderRulesTestCase extends ArchetypeServiceTest {
         Lookup group = ReminderTestHelper.createReminderGroup();
         Party patient = TestHelper.createPatient();
         Entity reminderType = ReminderTestHelper.createReminderType(
-                1, DateUnits.MONTHS, group);
+                1, DateUnits.MONTHS, 0, DateUnits.MONTHS, group);
         Date start = java.sql.Date.valueOf("2007-01-01");
         Act reminder = ReminderTestHelper.createReminder(patient, reminderType);
         reminder.setActivityStartTime(start);
@@ -584,11 +571,32 @@ public class ReminderRulesTestCase extends ArchetypeServiceTest {
     }
 
     /**
+     * Verifies that reminders are marked COMPLETED if they are IN_PROGRESS on save and
+     * {@link ReminderRules#shouldCancel(Act, Date)} is {@code true}.
+     * <p/>
+     * Note that COMPLETED is used an not CANCELLED, which is only used when processing reminders.
+     * This behaviour is to support reminders that complete other reminders, but should also be marked COMPLETED rather
+     * than left IN_PROGRESS.
+     */
+    @Test
+    public void testCompleteOnSave() {
+        Party patient = TestHelper.createPatient();
+        Entity reminderType = ReminderTestHelper.createReminderType(0, DateUnits.MONTHS, 0, DateUnits.MONTHS);
+        Act reminder = ReminderTestHelper.createReminder(patient, reminderType);
+        reminder.setActivityEndTime(new Date());
+        assertEquals(ActStatus.IN_PROGRESS, reminder.getStatus());
+        assertTrue(rules.shouldCancel(reminder, new Date()));
+        save(reminder);
+        assertEquals(ActStatus.COMPLETED, reminder.getStatus());
+    }
+
+    /**
      * Sets up the test case.
      */
     @Before
     public void setUp() {
-        rules = new ReminderRules(getArchetypeService(), new PatientRules(getArchetypeService(), lookups, null));
+        rules = new ReminderRules(getArchetypeService(), new PatientRules(getArchetypeService(), getLookupService(),
+                                                                          null));
     }
 
     /**
