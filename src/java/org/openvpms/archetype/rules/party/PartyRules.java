@@ -32,7 +32,6 @@ import org.openvpms.component.business.service.archetype.helper.ArchetypeQueryHe
 import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
 import org.openvpms.component.business.service.archetype.helper.LookupHelper;
 import org.openvpms.component.business.service.archetype.helper.LookupHelperException;
-import org.openvpms.component.business.service.archetype.helper.TypeHelper;
 import org.openvpms.component.business.service.lookup.ILookupService;
 
 import java.util.HashSet;
@@ -127,16 +126,28 @@ public class PartyRules {
      * @throws ArchetypeServiceException for any archetype service error
      */
     public String getFullName(Party party) {
-        String name;
-        if (TypeHelper.isA(party, "party.customerperson")) {
+        return getFullName(party, true);
+    }
+
+    /**
+     * Returns the formatted full name of a party.
+     *
+     * @param party        the party
+     * @param includeTitle if {@code true} include the person's title
+     * @return the formatted full name of the party
+     * @throws ArchetypeServiceException for any archetype service error
+     */
+    public String getFullName(Party party, boolean includeTitle) {
+        String name = null;
+        if (party != null) {
             IMObjectBean bean = new IMObjectBean(party, service);
             if (bean.hasNode("companyName") && (bean.getString("companyName") != null)) {
                 name = party.getName();
+            } else if (bean.hasNode("title") && bean.hasNode("firstName") && bean.hasNode("lastName")) {
+                name = getPersonName(bean, includeTitle);
             } else {
-                name = getPersonName(party);
+                name = party.getName();
             }
-        } else {
-            name = party.getName();
         }
         return (name != null) ? name : "";
     }
@@ -543,27 +554,24 @@ public class PartyRules {
     }
 
     /**
-     * Returns a formatted name for a <em>party.customerPerson</em>.
+     * Returns a formatted name for a bean with title, firstName, and lastName nodes.
      *
-     * @param party the party
+     * @param bean         the bean
+     * @param includeTitle if {@code true} include the person's title
      * @return a formatted name
      * @throws ArchetypeServiceException for any archetype service error
      * @throws LookupHelperException     if the title lookup is incorrect
      */
-    private String getPersonName(Party party) {
-
+    private String getPersonName(IMObjectBean bean, boolean includeTitle) {
         StringBuilder result = new StringBuilder();
-        if (party != null) {
-            IMObjectBean bean = new IMObjectBean(party, service);
-            NodeDescriptor descriptor = bean.getDescriptor("title");
-            String title = LookupHelper.getName(service, lookups, descriptor, party);
-            String firstName = bean.getString("firstName", "");
-            String lastName = bean.getString("lastName", "");
-            if (title != null) {
-                result.append(title).append(" ");
-            }
-            result.append(firstName).append(" ").append(lastName);
+        NodeDescriptor descriptor = bean.getDescriptor("title");
+        String title = (includeTitle) ? LookupHelper.getName(service, lookups, descriptor, bean.getObject()) : null;
+        String firstName = bean.getString("firstName", "");
+        String lastName = bean.getString("lastName", "");
+        if (title != null) {
+            result.append(title).append(" ");
         }
+        result.append(firstName).append(" ").append(lastName);
         return result.toString();
     }
 
@@ -747,7 +755,6 @@ public class PartyRules {
      *
      * @param party     the party. May be {@code null}
      * @param type      the contact type
-     * @param purposes  the contact purposes. May be empty
      * @param exact     if {@code true}, the contact must have the specified purpose
      * @param exclusion if present will exclude contacts with this purpose. May be {@code null}
      * @param purposes  the purposes to match, if any
