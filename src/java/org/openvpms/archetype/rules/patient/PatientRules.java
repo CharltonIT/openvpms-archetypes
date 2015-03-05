@@ -36,14 +36,7 @@ import org.openvpms.component.business.service.archetype.helper.IMObjectBean;
 import org.openvpms.component.business.service.archetype.helper.IMObjectBeanFactory;
 import org.openvpms.component.business.service.archetype.helper.TypeHelper;
 import org.openvpms.component.business.service.lookup.ILookupService;
-import org.openvpms.component.system.common.query.ArchetypeQuery;
-import org.openvpms.component.system.common.query.Constraints;
-import org.openvpms.component.system.common.query.IMObjectQueryIterator;
-import org.openvpms.component.system.common.query.JoinConstraint;
-import org.openvpms.component.system.common.query.NodeSelectConstraint;
-import org.openvpms.component.system.common.query.ObjectSet;
-import org.openvpms.component.system.common.query.ObjectSetQueryIterator;
-import org.openvpms.component.system.common.query.ParticipationConstraint;
+import org.openvpms.component.system.common.query.*;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -579,6 +572,17 @@ public class PatientRules {
     }
 
     /**
+     * Returns the active microchip identity as an object for a patient.
+     *
+     * @param patient the patient
+     * @return the active microchip object, or {@code null} if none is found
+     */
+    public EntityIdentity getMicrochipObject(Party patient) {
+        return getIdentityObject(patient, "entityIdentity.microchip");
+    }
+
+
+    /**
      * Returns the most recent active pet tag for a patient.
      *
      * @param patient the patient
@@ -677,6 +681,29 @@ public class PatientRules {
             }
         }
         return (result != null) ? result.getIdentity() : null;
+    }
+
+    /**
+     * Returns the EntityIdentity object or {@code null} if none found
+     *
+     * @param patient  the patient  may be {@code null}
+     * @param shortName the identity archetype short name
+     * @return the EntityIdentity, or {@code null} if none is found
+     */
+
+    public EntityIdentity getIdentityObject(Party patient, String shortName) {
+        EntityIdentity result = null;
+        if (patient != null) {
+            for (EntityIdentity identity : patient.getIdentities()) {
+                if (identity.isActive() && TypeHelper.isA(identity, shortName)) {
+                    if (result == null || result.getId() < identity.getId()) {
+                        result = identity;
+                    }
+                }
+            }
+        }
+        return result;
+
     }
 
     /**

@@ -321,6 +321,7 @@ public class PartyFunctionsTestCase extends ArchetypeServiceTest {
 
     /**
      * Tests the {@link PartyFunctions#getPatientMicrochip(Party)} method.
+     * Tests the {&Link PartyFunctions#getMicrochip(Party)} method.
      */
     @Test
     public void testActGetPatientMicrochip() {
@@ -329,6 +330,7 @@ public class PartyFunctionsTestCase extends ArchetypeServiceTest {
 
         JXPathContext ctx = createContext(act);
         assertEquals("", ctx.getValue("party:getPatientMicrochip(.)"));
+        assertNull(ctx.getValue("party:getMicrochip(.)"));
 
         EntityIdentity microchip = (EntityIdentity) create("entityIdentity.microchip");
         IMObjectBean tagBean = new IMObjectBean(microchip);
@@ -340,6 +342,8 @@ public class PartyFunctionsTestCase extends ArchetypeServiceTest {
         bean.addParticipation("participation.patient", patient);
 
         assertEquals("1234567", ctx.getValue("party:getPatientMicrochip(.)"));
+        assertEquals(microchip, ctx.getValue("party:getMicrochip(.)"));
+        assertEquals("1234567", ctx.getValue("openvpms:get(party:getMicrochip(.),'microchip')"));
     }
 
     /**

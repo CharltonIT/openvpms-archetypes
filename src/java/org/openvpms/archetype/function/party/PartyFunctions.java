@@ -885,6 +885,46 @@ public class PartyFunctions {
     }
 
     /**
+     * Returns the whole microchip object for use with openvpms:get jxpath expressions
+     * @param party the patient
+     * @return the {@Link org.openvpms.component.business.domain.im.common.EntityIdentity} object.
+     */
+    public Object getMicrochip(Party party) {
+        return patientRules.getMicrochipObject(party);
+    }
+
+    /**
+     * Returns the whole microchip object for use with openvpms:get jxpath expressions
+     *
+     * @param act the act
+     * @return the {@Link org.openvpms.component.business.domain.im.common.EntityIdentity} object.
+     */
+
+    public Object getMicrochip(Act act) {
+        Party party = getPatient(act);
+        return patientRules.getMicrochipObject(party);
+    }
+
+    /**
+     * Returns the whole microchip object for use with openvpms:get jxpath expressions
+     *
+     * @param context the context
+     * @return the {@Link org.openvpms.component.business.domain.im.common.EntityIdentity} object.
+     */
+
+    public Object getMicrochip(ExpressionContext context) {
+        Object result = null;
+        Pointer pointer = context.getContextNodePointer();
+        Object value = pointer.getValue();
+        if (value instanceof Act) {
+            result = getMicrochip((Act) value);
+        } else if (value instanceof Party) {
+            result = getMicrochip((Party) value);
+        }
+        return result;
+    }
+
+    /**
      * Returns the patient pet tag.
      *
      * @param patient the patient
