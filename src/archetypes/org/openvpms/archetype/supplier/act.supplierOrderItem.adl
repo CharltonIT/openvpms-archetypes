@@ -28,6 +28,9 @@
         <node name="product" path="/participations" type="java.util.HashSet"
               minCardinality="1" maxCardinality="1"
               filter="participation.stock"/>
+        <node name="customer" path="/participations" displayName="Customer" type="java.util.HashSet"
+              minCardinality="0" maxCardinality="1"
+              filter="participation.customer"/>
         <node name="reorderCode" path="/details/reorderCode" type="java.lang.String"
               minCardinality="0"/>
         <node name="reorderDescription" path="/details/reorderDescription" type="java.lang.String"
