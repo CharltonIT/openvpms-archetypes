@@ -16,29 +16,17 @@
 
 package org.openvpms.archetype.test.tools;
 
-import org.openvpms.archetype.rules.doc.DocumentArchetypes;
-import org.openvpms.archetype.rules.doc.DocumentHandler;
-import org.openvpms.archetype.rules.doc.DocumentHandlers;
-import org.openvpms.archetype.rules.patient.PatientArchetypes;
 import org.openvpms.archetype.rules.patient.reminder.ReminderTestHelper;
 import org.openvpms.archetype.rules.util.DateRules;
 import org.openvpms.archetype.rules.util.DateUnits;
 import org.openvpms.archetype.test.TestHelper;
-import org.openvpms.component.business.domain.im.act.DocumentAct;
 import org.openvpms.component.business.domain.im.common.Entity;
-import org.openvpms.component.business.domain.im.document.Document;
 import org.openvpms.component.business.domain.im.party.Party;
-import org.openvpms.component.business.service.archetype.helper.ActBean;
-import org.openvpms.component.business.service.archetype.helper.DescriptorHelper;
-import org.openvpms.component.business.service.archetype.helper.EntityBean;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.Date;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Tool to generate reminders.
