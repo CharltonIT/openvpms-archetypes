@@ -160,30 +160,40 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
     }
 
     /**
-     * Helper to create a <em>POSTED</em>
-     * <em>act.customerAccountChargesInvoice</em> with an associated
+     * Helper to create a <em>POSTED</em> <em>act.customerAccountChargesInvoice</em> with an associated
      * <em>act.customerAccountInvoiceItem</em>.
      *
      * @param amount the act total
      * @return a list containing the invoice act and its item
      */
-    protected List<FinancialAct> createChargesInvoice(Money amount) {
+    protected List<FinancialAct> createChargesInvoice(BigDecimal amount) {
         return createChargesInvoice(amount, getCustomer());
     }
 
     /**
-     * Helper to create a <em>POSTED</em>
-     * <em>act.customerAccountChargesInvoice</em> with an associated
+     * Helper to create a <em>POSTED</em>  <em>act.customerAccountChargesInvoice</em> with an associated
      * <em>act.customerAccountInvoiceItem</em>.
      *
      * @param amount   the act total
      * @param customer the customer
      * @return a list containing the invoice act and its item
      */
-    protected List<FinancialAct> createChargesInvoice(Money amount,
-                                                      Party customer) {
+    protected List<FinancialAct> createChargesInvoice(BigDecimal amount, Party customer) {
+        return createChargesInvoice(amount, customer, getProduct());
+    }
+
+    /**
+     * Helper to create a <em>POSTED</em>  <em>act.customerAccountChargesInvoice</em> with an associated
+     * <em>act.customerAccountInvoiceItem</em>.
+     *
+     * @param amount   the act total
+     * @param customer the customer
+     * @param product  the product
+     * @return a list containing the invoice act and its item
+     */
+    protected List<FinancialAct> createChargesInvoice(BigDecimal amount, Party customer, Product product) {
         List<FinancialAct> result = FinancialTestHelper.createChargesInvoice(
-                amount, customer, getPatient(), getProduct(), ActStatus.POSTED);
+                amount, customer, getPatient(), product, ActStatus.POSTED);
         ActBean item = new ActBean(result.get(1));
         item.addNodeParticipation("stockLocation", getStockLocation());
         return result;
@@ -199,9 +209,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param startTime the act start time
      * @return a list containing the invoice act and its item
      */
-    protected List<FinancialAct> createChargesInvoice(Money amount,
-                                                      Party customer,
-                                                      Date startTime) {
+    protected List<FinancialAct> createChargesInvoice(BigDecimal amount, Party customer, Date startTime) {
         List<FinancialAct> acts = createChargesInvoice(amount, customer);
         acts.get(0).setActivityStartTime(startTime);
         return acts;
@@ -216,8 +224,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param startTime the act start time
      * @return a list containing the invoice act and its item
      */
-    protected List<FinancialAct> createChargesInvoice(Money amount,
-                                                      Date startTime) {
+    protected List<FinancialAct> createChargesInvoice(BigDecimal amount, Date startTime) {
         List<FinancialAct> acts = createChargesInvoice(amount);
         acts.get(0).setActivityStartTime(startTime);
         return acts;
@@ -233,9 +240,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param status    the act status
      * @return a new act
      */
-    protected List<FinancialAct> createChargesInvoice(Money amount,
-                                                      Party customer,
-                                                      Date startTime,
+    protected List<FinancialAct> createChargesInvoice(BigDecimal amount, Party customer, Date startTime,
                                                       String status) {
         List<FinancialAct> acts = FinancialTestHelper.createChargesInvoice(
                 amount, customer, getPatient(), getProduct(), status);
@@ -253,9 +258,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param status    the act status
      * @return a new act
      */
-    protected List<FinancialAct> createChargesInvoice(Money amount,
-                                                      Date startTime,
-                                                      String status) {
+    protected List<FinancialAct> createChargesInvoice(BigDecimal amount, Date startTime, String status) {
         return createChargesInvoice(amount, getCustomer(), startTime, status);
     }
 
@@ -267,7 +270,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new act
      */
-    protected List<FinancialAct> createChargesCounter(Money amount) {
+    protected List<FinancialAct> createChargesCounter(BigDecimal amount) {
         List<FinancialAct> result = FinancialTestHelper.createChargesCounter(amount, getCustomer(), getProduct(),
                                                                              ActStatus.POSTED);
         ActBean item = new ActBean(result.get(1));
@@ -283,7 +286,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new act
      */
-    protected List<FinancialAct> createChargesCredit(Money amount) {
+    protected List<FinancialAct> createChargesCredit(BigDecimal amount) {
         List<FinancialAct> result = FinancialTestHelper.createChargesCredit(amount, getCustomer(), getPatient(),
                                                                             getProduct(), ActStatus.POSTED);
         ActBean item = new ActBean(result.get(1));
@@ -297,7 +300,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new payment
      */
-    protected FinancialAct createPayment(Money amount) {
+    protected FinancialAct createPayment(BigDecimal amount) {
         return createPayment(amount, getCustomer());
     }
 
@@ -308,7 +311,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param customer the customer
      * @return a new payment
      */
-    protected FinancialAct createPayment(Money amount, Party customer) {
+    protected FinancialAct createPayment(BigDecimal amount, Party customer) {
         return FinancialTestHelper.createPaymentCash(amount, customer, getTill());
     }
 
@@ -319,7 +322,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param startTime the act start time
      * @return a new act
      */
-    protected FinancialAct createPayment(Money amount, Date startTime) {
+    protected FinancialAct createPayment(BigDecimal amount, Date startTime) {
         FinancialAct payment = createPayment(amount);
         payment.setActivityStartTime(startTime);
         return payment;
@@ -332,9 +335,8 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the amount
      * @return a new payment
      */
-    protected FinancialAct createPaymentCash(Money amount) {
-        return FinancialTestHelper.createPaymentCash(amount, getCustomer(),
-                                                     getTill());
+    protected FinancialAct createPaymentCash(BigDecimal amount) {
+        return FinancialTestHelper.createPaymentCash(amount, getCustomer(), getTill());
     }
 
     /**
@@ -344,9 +346,8 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the amount
      * @return a new payment
      */
-    protected FinancialAct createPaymentCheque(Money amount) {
-        return FinancialTestHelper.createPaymentCheque(amount, getCustomer(),
-                                                       getTill());
+    protected FinancialAct createPaymentCheque(BigDecimal amount) {
+        return FinancialTestHelper.createPaymentCheque(amount, getCustomer(), getTill());
     }
 
     /**
@@ -356,9 +357,8 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the amount
      * @return a new payment
      */
-    protected FinancialAct createPaymentCredit(Money amount) {
-        return FinancialTestHelper.createPaymentCredit(amount, getCustomer(),
-                                                       getTill());
+    protected FinancialAct createPaymentCredit(BigDecimal amount) {
+        return FinancialTestHelper.createPaymentCredit(amount, getCustomer(), getTill());
     }
 
     /**
@@ -368,9 +368,8 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the amount
      * @return a new payment
      */
-    protected FinancialAct createPaymentDiscount(Money amount) {
-        return FinancialTestHelper.createPaymentDiscount(amount, getCustomer(),
-                                                         getTill());
+    protected FinancialAct createPaymentDiscount(BigDecimal amount) {
+        return FinancialTestHelper.createPaymentDiscount(amount, getCustomer(), getTill());
     }
 
     /**
@@ -380,9 +379,8 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the amount
      * @return a new payment
      */
-    protected FinancialAct createPaymentEFT(Money amount) {
-        return FinancialTestHelper.createPaymentEFT(amount, getCustomer(),
-                                                    getTill());
+    protected FinancialAct createPaymentEFT(BigDecimal amount) {
+        return FinancialTestHelper.createPaymentEFT(amount, getCustomer(), getTill());
     }
 
     /**
@@ -391,7 +389,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the amount
      * @return a new payment
      */
-    protected FinancialAct createPaymentOther(Money amount) {
+    protected FinancialAct createPaymentOther(BigDecimal amount) {
         return FinancialTestHelper.createPaymentOther(amount, getCustomer(), getTill());
     }
 
@@ -401,7 +399,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new refund
      */
-    protected FinancialAct createRefund(Money amount) {
+    protected FinancialAct createRefund(BigDecimal amount) {
         return FinancialTestHelper.createRefundCash(amount, getCustomer(), getTill());
     }
 
@@ -411,7 +409,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new refund
      */
-    protected FinancialAct createRefundCash(Money amount) {
+    protected FinancialAct createRefundCash(BigDecimal amount) {
         return FinancialTestHelper.createRefundCash(amount, getCustomer(), getTill());
     }
 
@@ -421,7 +419,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new refund
      */
-    protected FinancialAct createRefundCheque(Money amount) {
+    protected FinancialAct createRefundCheque(BigDecimal amount) {
         return FinancialTestHelper.createRefundCheque(amount, getCustomer(), getTill());
     }
 
@@ -431,7 +429,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new refund
      */
-    protected FinancialAct createRefundCredit(Money amount) {
+    protected FinancialAct createRefundCredit(BigDecimal amount) {
         return FinancialTestHelper.createRefundCredit(amount, getCustomer(), getTill());
     }
 
@@ -441,7 +439,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new refund
      */
-    protected FinancialAct createRefundDiscount(Money amount) {
+    protected FinancialAct createRefundDiscount(BigDecimal amount) {
         return FinancialTestHelper.createRefundDiscount(amount, getCustomer(), getTill());
     }
 
@@ -451,7 +449,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new refund
      */
-    protected FinancialAct createRefundEFT(Money amount) {
+    protected FinancialAct createRefundEFT(BigDecimal amount) {
         return FinancialTestHelper.createRefundEFT(amount, getCustomer(), getTill());
     }
 
@@ -461,7 +459,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new refund
      */
-    protected FinancialAct createRefundOther(Money amount) {
+    protected FinancialAct createRefundOther(BigDecimal amount) {
         return FinancialTestHelper.createRefundOther(amount, getCustomer(), getTill());
     }
 
@@ -471,7 +469,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new credit adjustment
      */
-    protected FinancialAct createCreditAdjust(Money amount) {
+    protected FinancialAct createCreditAdjust(BigDecimal amount) {
         return createAct("act.customerAccountCreditAdjust", amount);
     }
 
@@ -481,7 +479,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new debit adjustment
      */
-    protected FinancialAct createDebitAdjust(Money amount) {
+    protected FinancialAct createDebitAdjust(BigDecimal amount) {
         return createAct("act.customerAccountDebitAdjust", amount);
     }
 
@@ -491,7 +489,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new initial balance
      */
-    protected FinancialAct createInitialBalance(Money amount) {
+    protected FinancialAct createInitialBalance(BigDecimal amount) {
         return createAct("act.customerAccountInitialBalance", amount);
     }
 
@@ -501,7 +499,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount the act total
      * @return a new bad debt
      */
-    protected FinancialAct createBadDebt(Money amount) {
+    protected FinancialAct createBadDebt(BigDecimal amount) {
         return createAct("act.customerAccountBadDebt", amount);
     }
 
@@ -526,10 +524,8 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param accountFeeAmount the account fee
      * @return a new classification
      */
-    protected Lookup createAccountType(int paymentTerms, DateUnits paymentUom,
-                                       BigDecimal accountFeeAmount) {
-        return FinancialTestHelper.createAccountType(paymentTerms, paymentUom,
-                                                     accountFeeAmount);
+    protected Lookup createAccountType(int paymentTerms, DateUnits paymentUom, BigDecimal accountFeeAmount) {
+        return FinancialTestHelper.createAccountType(paymentTerms, paymentUom, accountFeeAmount);
     }
 
     /**
@@ -540,7 +536,7 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param amount    the act total
      * @return a new act
      */
-    private FinancialAct createAct(String shortName, Money amount) {
+    private FinancialAct createAct(String shortName, BigDecimal amount) {
         return createAct(shortName, amount, getCustomer());
     }
 
@@ -553,11 +549,10 @@ public abstract class AbstractCustomerAccountTest extends ArchetypeServiceTest {
      * @param customer  the customer
      * @return a new act
      */
-    private FinancialAct createAct(String shortName, Money amount,
-                                   Party customer) {
+    private FinancialAct createAct(String shortName, BigDecimal amount, Party customer) {
         FinancialAct act = (FinancialAct) create(shortName);
         act.setStatus(FinancialActStatus.POSTED);
-        act.setTotal(amount);
+        act.setTotal(new Money(amount));
         ActBean bean = new ActBean(act);
         bean.addParticipation("participation.customer", customer);
         return act;
