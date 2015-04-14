@@ -324,6 +324,34 @@ public class PartyFunctionsTestCase extends ArchetypeServiceTest {
     }
 
     /**
+     * Tests the {@Link PartyFunctions#getExportDate(Party)} method.
+     */
+
+    @Test
+    public void testActGetPatientExport() {
+        Party patient = TestHelper.createPatient();
+        Act visit = (Act) create(PatientArchetypes.CLINICAL_EVENT);
+        ActBean bean = new ActBean(visit);
+        bean.addNodeParticipation("patient", patient);
+
+        JXPathContext ctx = createContext(visit);
+        assertNull(ctx.getValue("party:getPatientExportAct()"));
+
+        Act export1 = PatientTestHelper.createExport(
+                TestHelper.getDate("2014-12-22"), patient, TestHelper.getDate("2014-12-25"), "AU");
+        assertEquals(export1, ctx.getValue("party:getPatientExportAct(.)"));
+
+        Act export2 = PatientTestHelper.createExport(
+                TestHelper.getDate("2014-12-23"), patient, TestHelper.getDate("2014-12-20"), "AU");
+        assertEquals(export2, ctx.getValue("party:getPatientExportAct(.)"));
+        assertEquals("2014-12-23", ctx.getValue("openvpms:get(party:getPatientExportAct(.), 'exportDate')"));
+
+        remove(export2);
+        assertEquals(export1, ctx.getValue("party:getPatientExportAct(.)"));
+        assertEquals("2014-12-22", ctx.getValue("openvpms:get(party:getPatientExportAct(.), 'exportDate')"));
+
+    }
+    /**
      * Tests the {@link PartyFunctions#getPatientMicrochip(Act)} and {@link PartyFunctions#getMicrochip(Act)}
      * methods.
      */

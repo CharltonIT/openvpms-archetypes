@@ -81,7 +81,7 @@ public class PatientRulesTestCase extends ArchetypeServiceTest {
         rules.addPatientOwnerRelationship(customer, patient2);
         assertEquals(customer, rules.getOwner(patient2));
         assertEquals(customer.getObjectReference(),
-                     rules.getOwnerReference(patient2));
+                rules.getOwnerReference(patient2));
 
         deactivateOwnerRelationship(patient2);
         assertNull(rules.getOwner(patient2));
@@ -101,7 +101,7 @@ public class PatientRulesTestCase extends ArchetypeServiceTest {
         checkOwner(patient, "2006-12-10", null); // no owner
 
         EntityRelationship r1 = rules.addPatientOwnerRelationship(customer1,
-                                                                  patient);
+                patient);
         EntityRelationship r2 = rules.addPatientOwnerRelationship(customer2,
                                                                   patient);
 

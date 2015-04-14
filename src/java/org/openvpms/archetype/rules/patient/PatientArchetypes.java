@@ -80,69 +80,56 @@ public class PatientArchetypes {
      * Patient clinical problem act short name.
      */
     public static final String CLINICAL_PROBLEM = "act.patientClinicalProblem";
-
-    /**
-     * Clinical problem item act relationship short name,
-     */
-    public static String CLINICAL_PROBLEM_ITEM = "actRelationship.patientClinicalProblemItem";
-
     /**
      * Patient weight act short name.
      */
     public static final String PATIENT_WEIGHT = "act.patientWeight";
-
     /**
      * Patient document attachment act short name.
      */
     public static final String DOCUMENT_ATTACHMENT = "act.patientDocumentAttachment";
-
     /**
      * Patient document attachment version act short name.
      */
     public static final String DOCUMENT_ATTACHMENT_VERSION = "act.patientDocumentAttachmentVersion";
-
     /**
      * Patient document form act short name.
      */
     public static final String DOCUMENT_FORM = "act.patientDocumentForm";
-
     /**
      * Patient document image act short name.
      */
     public static final String DOCUMENT_IMAGE = "act.patientDocumentImage";
-
     /**
      * Patient document image version act short name.
      */
     public static final String DOCUMENT_IMAGE_VERSION = "act.patientDocumentImageVersion";
-
     /**
      * Patient document letter act short name.
      */
     public static final String DOCUMENT_LETTER = "act.patientDocumentLetter";
-
     /**
      * Patient document letter version act short name.
      */
     public static final String DOCUMENT_LETTER_VERSION = "act.patientDocumentLetterVersion";
-
     /**
      * Patient alert act short name.
      */
     public static final String ALERT = "act.patientAlert";
-
     /**
      * Patient prescription act short name.
      */
     public static final String PRESCRIPTION = "act.patientPrescription";
-
     /**
      * Prescription medication relationship short name.
      */
     public static final String PRESCRIPTION_MEDICATION = "actRelationship.patientPrescriptionMedication";
-
     /**
      * Customer note act short name.
      */
     public static final String CUSTOMER_NOTE = "act.patientCustomerNote";
+    /**
+     * Clinical problem item act relationship short name,
+     */
+    public static String CLINICAL_PROBLEM_ITEM = "actRelationship.patientClinicalProblemItem";
 }
